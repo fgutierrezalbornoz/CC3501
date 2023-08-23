@@ -12,7 +12,7 @@ class Controller(pyglet.window.Window):
         
 
 if __name__=="__main__":
-    controller = Controller("Tarea 0", width=WIDTH, height=HEIGHT, resizable=True)
+    controller = Controller("Tarea 0 - Hexagono de Colores", width=WIDTH, height=HEIGHT, resizable=True)
     
     vertex_source_code = """
         #version 330
