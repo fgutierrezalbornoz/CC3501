@@ -52,36 +52,54 @@ frag_shader =pyglet.graphics.shader.Shader(fragment_source_code,"fragment")
 pipeline = pyglet.graphics.shader.ShaderProgram(vert_shader, frag_shader)
 
 positions = np.array([
+         0.0,  0.0,
         -0.2, -0.2,
          0.2, -0.2, 
+         0.2, -0.2, 
+         0.4,  0.0,
          0.4,  0.0,
          0.2,  0.2,
+         0.2,  0.2,
         -0.2,  0.2,
-        -0.4,  0.0
+        -0.2,  0.2,
+        -0.4,  0.0,
+        -0.4,  0.0,
+        -0.2, -0.2
 
     ], dtype=np.float32)
 
 colors = np.array([
+        1, 1, 1,
+        1, 0, 0,
         1, 0, 0,
         0, 1, 0,
+        0, 1, 0,
         0, 0, 1,
-        1, 1, 1,
+        0, 0, 1,
+        1, 0, 1,
+        1, 0, 1,
+        1, 1, 0,
+        1, 1, 0,
         0, 1, 1,
-        1, 1, 0
+        0, 1, 1
+
     ], dtype=np.float32)
 
 intensities = np.array([
-        1, 1, 1, 1, 1, 1
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ], dtype=np.float32)
 
 indices = np.array([
     0, 1, 2,
-    0, 2, 5,
-    5, 2, 3,
-    5, 3, 4
+    0, 3, 4,
+    0, 5, 6,
+    0, 7, 8,
+    0, 9, 10,
+    0, 11, 12,
+
     ], dtype=np.uint32)
 
-gpu_hex = pipeline.vertex_list_indexed(6, GL.GL_TRIANGLES, indices)
+gpu_hex = pipeline.vertex_list_indexed(13, GL.GL_TRIANGLES, indices)
 gpu_hex.position = positions
 gpu_hex.color = colors
 gpu_hex.intensity = intensities
