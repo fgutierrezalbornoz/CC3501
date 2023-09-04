@@ -3,41 +3,18 @@ from OpenGL import GL
 import numpy as np
 import sys
 import os
+import time
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname((os.path.abspath(__file__))))))
 import grafica.transformations as tr
 
-WIDTH = 480
+WIDTH = 640#480
 HEIGHT = 640
 
-class Controller(pyglet.window.Window):
-    def __init__(self, title,*args,**kargs):
-        super().__init__(*args,**kargs)
-        self.set_minimum_size(80,80)
-        self.set_caption(title)
-
-    def init(self):
-        GL.glClearColor(0, 0, 0, 1.0) #no sé qué hace
-
-class ModelController():
-    def __init__(self):
-        self.intensity = 1.0
-        self.position = np.array([0, 0, 0], dtype=np.float32)
-        self.rotation = np.array([0, 0, 0], dtype=np.float32)
-        self.scale = np.array([1, 1, 1], dtype=np.float32)
-
-    def get_intensity(self):
-        return self.intensity
-    
-    def get_transform(self):
-        translation_matrix = tr.translate(self.position[0], self.position[1], self.position[2])
-        rotation_matrix = tr.rotationX(self.rotation[0]) @ tr.rotationY(self.rotation[1]) @ tr.rotationZ(self.rotation[2])
-        scale_matrix = tr.scale(self.scale[0], self.scale[1], self.scale[2])
-        return translation_matrix @ rotation_matrix @ scale_matrix
-    
 #------------------------------------------------------------
 # Implementación de pyglet
 #------------------------------------------------------------
-class Pipeline(pyglet.graphics.shader.ShaderPogram):
+
+class Pipeline(pyglet.graphics.shader.ShaderProgram):
     def __init__(self, vertex_source, fragment_source):
         vert_shader = pyglet.graphics.shader.Shader(vertex_source,"vertex")
         frag_shader = pyglet.graphics.shader.Shader(fragment_source,"fragment")
@@ -48,6 +25,7 @@ class Pipeline(pyglet.graphics.shader.ShaderPogram):
         if uniform is None:
             print(f"Warning: uniform {name} does not exist")
             return
+        
         if type == "matrix":
             self[name] == np.reshape(value, (16, 1), order="F")
         elif type == "float":
@@ -81,36 +59,63 @@ class Model():
         self.gpu_data.draw(mode)
 
 #------------------------------------------------------------
-#------------------------------------------------------------        
+#------------------------------------------------------------ 
+
+class Controller(pyglet.window.Window):
+    def __init__(self, title,*args,**kargs):
+        super().__init__(*args,**kargs)
+        self.set_minimum_size(80,80)
+        self.set_caption(title)
+        self.init()
+
+    def init(self):
+        GL.glClearColor(0, 0, 0, 1.0) #no sé qué hace
+
+class ModelController():
+    def __init__(self):
+        self.intensity = 1.0
+        self.position = np.array([0, 0, 0], dtype=np.float32)
+        self.rotation = np.array([0, 0, 0], dtype=np.float32)
+        self.scale = np.array([1, 1, 1], dtype=np.float32)
+
+    def get_intensity(self):
+        return self.intensity
+    
+    def get_transform(self):
+        translation_matrix = tr.translate(self.position[0], self.position[1], self.position[2])
+        rotation_matrix = tr.rotationX(self.rotation[0]) @ tr.rotationY(self.rotation[1]) @ tr.rotationZ(self.rotation[2])
+        scale_matrix = tr.scale(self.scale[0], self.scale[1], self.scale[2])
+        return translation_matrix @ rotation_matrix @ scale_matrix
+           
 
 vertex_source_code = """
-#version 330
+    #version 330
 
-in vec3 position;
-in vec3 color;
+    in vec3 position;
+    in vec3 color;
 
-uniform float u_intensity = 1.0f;
-uniform mat4 u_transform = mat4(1.0);
+    uniform float u_intensity = 1.0f;
+    uniform mat4 u_transform = mat4(1.0);
 
-out vec3 fragColor;
+    out vec3 fragColor;
 
-void main()
-{
-    fragColor = color * u_intensity;
-    gl_Position = u_transform * vec4(position, 1.0f);
-}
+    void main()
+    {
+        fragColor = color * u_intensity;
+        gl_Position = u_transform * vec4(position, 1.0f);
+    }
 """
 
 fragment_source_code = """
-#version 330
+    #version 330
 
-in vec3 fragColor;
-out vec4 outColor;
+    in vec3 fragColor;
+    out vec4 outColor;
 
-void main()
-{
-    outColor = vec4(fragColor, 1.0f);
-}
+    void main()
+    {
+        outColor = vec4(fragColor, 1.0f);
+    }
 """
 
 if __name__=="__main__":
@@ -118,50 +123,59 @@ if __name__=="__main__":
     
     pipeline = Pipeline(vertex_source_code, fragment_source_code)
 
+    Hex=Model([-0.5, -0.5, 0,    1, 0, 0,
+                       0.5, -0.5, 0,    0, 1, 0,
+                       0.0,  0.5, 0,    0, 0, 1 ])
+    # Hex = Model([-0.2, -0.2, -0.1,      1, 1, 1,
+    #             0.2, -0.2, -0.1,      1, 0, 0,
+    #             0.4,  0.0, -0.1,      0, 1, 0,
+    #             0.2,  0.2, -0.1,      0, 0, 1,
+    #             -0.2,  0.2, -0.1,      1, 0, 1,
+    #             -0.4,  0.0, -0.1,      1, 1, 0,
+    #             -0.2, -0.2,  0.1,      0, 1, 1,
+    #             0.2, -0.2,  0.1,      0, 0, 0,
+    #             0.4,  0.0,  0.1,      0.5, 0.5, 0.5,
+    #             0.2,  0.2,  0.1,      0.5, 0, 0,
+    #             -0.2,  0.2,  0.1,      0, 0.5, 0.5,
+    #             -0.4,  0.0,  0.1,      0, 0, 0.5], [
+    # 0, 1, 2,
+    # 0, 2, 3,
+    # 0, 3, 4,
+    # 0, 4, 5,
+    # 6, 7, 8,
+    # 6, 8, 9,
+    # 6, 9, 10,
+    # 6, 10, 11
 
-    Hex = Model([-0.2, -0.2, -0.1,      1, 1, 1,
-                0.2, -0.2, -0.1,      1, 0, 0,
-                0.4,  0.0, -0.1,      0, 1, 0,
-                0.2,  0.2, -0.1,      0, 0, 1,
-                -0.2,  0.2, -0.1,      1, 0, 1,
-                -0.4,  0.0, -0.1,      1, 1, 0,
-                -0.2, -0.2,  0.1,      0, 1, 1,
-                0.2, -0.2,  0.1,      0, 0, 0,
-                0.4,  0.0,  0.1,      0.5, 0.5, 0.5,
-                0.2,  0.2,  0.1,      0.5, 0, 0,
-                -0.2,  0.2,  0.1,      0, 0.5, 0.5,
-                -0.4,  0.0,  0.1,      0, 0, 0.5], [
-    0, 1, 2,
-    0, 2, 3,
-    0, 3, 4,
-    0, 4, 5,
-    6, 7, 8,
-    6, 8, 9,
-    6, 9, 10,
-    6, 10, 11
-
-    ])
+    # ])
 
     Hex.init_gpu_data(pipeline)
     Hex_controller = ModelController()
 
-indices = np.array([
-    0, 1, 2,
-    0, 2, 3,
-    0, 3, 4,
-    0, 4, 5,
-    6, 7, 8,
-    6, 8, 9,
-    6, 9, 10,
-    6, 10, 11
+    def update(dt):
+        Hex_controller.intensity = np.cos(time.time()) / 2 + 0.5
 
-    ], dtype=np.uint32)
+    print("Controles: \n\tClick derecho y arrastrar: rotar")
 
-@controller.event
-def on_draw():
-    controller.clear()
-    pipeline.use()
-    pipeline.set_uniform("u_intensity", Hex_controller.get_intensity(), "float")
-    pipeline.set_uniform("u_transform", Hex_controller.get_transform(), "matrix")
-    Hex.draw()
-pyglet.app.run()
+    @controller.event
+    def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+        if buttons & pyglet.window.mouse.LEFT:
+            Hex_controller.position[0] += dx / controller.width
+            Hex_controller.position[1] += dy / controller.height
+        elif buttons & pyglet.window.mouse.RIGHT:
+            Hex_controller.rotation[0] += dy / 100
+            Hex_controller.rotation[1] -= dx / 100
+        elif buttons & pyglet.window.mouse.MIDDLE:
+            Hex_controller.scale[0] += dx / 1000
+            Hex_controller.scale[1] += dy / 1000
+
+    @controller.event
+    def on_draw():
+        controller.clear()
+        pipeline.use()
+        pipeline.set_uniform("u_intensity", Hex_controller.get_intensity(), "float")
+        pipeline.set_uniform("u_transform", Hex_controller.get_transform(), "matrix")
+        Hex.draw()
+
+    pyglet.clock.schedule_interval(update, 1/60)
+    pyglet.app.run()
