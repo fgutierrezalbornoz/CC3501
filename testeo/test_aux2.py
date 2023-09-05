@@ -4,10 +4,10 @@ import numpy as np
 import sys
 import os
 import time
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname((os.path.abspath(__file__))))))
+sys.path.append(os.path.dirname(os.path.dirname((os.path.abspath(__file__)))))
 import grafica.transformations as tr
 
-WIDTH = 640#480
+WIDTH = 480
 HEIGHT = 640
 
 #------------------------------------------------------------
@@ -23,11 +23,11 @@ class Pipeline(pyglet.graphics.shader.ShaderProgram):
     def set_uniform(self, name, value, type):
         uniform = self[name]
         if uniform is None:
-            print(f"Warning: uniform {name} does not exist")
+            print(f"Warning: Uniform {name} does not exist")
             return
         
         if type == "matrix":
-            self[name] == np.reshape(value, (16, 1), order="F")
+            self[name] = np.reshape(value, (16, 1), order="F")
         elif type == "float":
             self[name] = value
 
@@ -123,37 +123,33 @@ if __name__=="__main__":
     
     pipeline = Pipeline(vertex_source_code, fragment_source_code)
 
-    Hex=Model([-0.5, -0.5, 0,    1, 0, 0,
-                       0.5, -0.5, 0,    0, 1, 0,
-                       0.0,  0.5, 0,    0, 0, 1 ])
-    # Hex = Model([-0.2, -0.2, -0.1,      1, 1, 1,
-    #             0.2, -0.2, -0.1,      1, 0, 0,
-    #             0.4,  0.0, -0.1,      0, 1, 0,
-    #             0.2,  0.2, -0.1,      0, 0, 1,
-    #             -0.2,  0.2, -0.1,      1, 0, 1,
-    #             -0.4,  0.0, -0.1,      1, 1, 0,
-    #             -0.2, -0.2,  0.1,      0, 1, 1,
-    #             0.2, -0.2,  0.1,      0, 0, 0,
-    #             0.4,  0.0,  0.1,      0.5, 0.5, 0.5,
-    #             0.2,  0.2,  0.1,      0.5, 0, 0,
-    #             -0.2,  0.2,  0.1,      0, 0.5, 0.5,
-    #             -0.4,  0.0,  0.1,      0, 0, 0.5], [
-    # 0, 1, 2,
-    # 0, 2, 3,
-    # 0, 3, 4,
-    # 0, 4, 5,
-    # 6, 7, 8,
-    # 6, 8, 9,
-    # 6, 9, 10,
-    # 6, 10, 11
-
-    # ])
+    Hex = Model([-0.2, -0.2, -0.1,      1, 1, 1,
+                0.2, -0.2, -0.1,      1, 0, 0,
+                0.4,  0.0, -0.1,      0, 1, 0,
+                0.2,  0.2, -0.1,      0, 0, 1,
+                -0.2,  0.2, -0.1,      1, 0, 1,
+                -0.4,  0.0, -0.1,      1, 1, 0,
+                -0.2, -0.2,  0.1,      0, 1, 1,
+                0.2, -0.2,  0.1,      0, 0, 0,
+                0.4,  0.0,  0.1,      0.5, 0.5, 0.5,
+                0.2,  0.2,  0.1,      0.5, 0, 0,
+                -0.2,  0.2,  0.1,      0, 0.5, 0.5,
+                -0.4,  0.0,  0.1,      0, 0, 0.5], [
+    0, 1, 2,
+    0, 2, 3,
+    0, 3, 4,
+    0, 4, 5,
+    6, 7, 8,
+    6, 8, 9,
+    6, 9, 10,
+    6, 10, 11
+    ])
 
     Hex.init_gpu_data(pipeline)
     Hex_controller = ModelController()
 
     def update(dt):
-        Hex_controller.intensity = np.cos(time.time()) / 2 + 0.5
+        pass
 
     print("Controles: \n\tClick derecho y arrastrar: rotar")
 
@@ -169,6 +165,7 @@ if __name__=="__main__":
             Hex_controller.scale[0] += dx / 1000
             Hex_controller.scale[1] += dy / 1000
 
+    #draw loop
     @controller.event
     def on_draw():
         controller.clear()
