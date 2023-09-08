@@ -146,10 +146,10 @@ fragment_source_code = """
 if __name__=="__main__":
     pipeline = Pipeline(vertex_source_code, fragment_source_code)
     controller = Controller("Testeo Auxiliar 3", width=WIDTH, height=HEIGHT, resizable=True)
-    controlled_shape = Mesh("testeo/wacky_races/Lbody-repaired.stl", d=0.152)
-    controlled_shape2 = Mesh("testeo/wacky_races/R-boby.stl")
+    controlled_shape = Mesh("testeo/wacky_races/auto_completo.stl")
+    #controlled_shape2 = Mesh("testeo/wacky_races/R-boby.stl",base_color=[75/256,0,130/256])
     controlled_shape.init_gpu_data(pipeline)
-    controlled_shape2.init_gpu_data(pipeline)
+    #controlled_shape2.init_gpu_data(pipeline)
 
     def update(dt):
         pass
@@ -161,13 +161,13 @@ if __name__=="__main__":
         if buttons & pyglet.window.mouse.LEFT:
             controlled_shape.position[0] += dx / controller.width
             controlled_shape.position[1] += dy / controller.height
-            controlled_shape2.position[0] += dx / controller.width
-            controlled_shape2.position[1] += dy / controller.height
+            #controlled_shape2.position[0] += dx / controller.width
+            #controlled_shape2.position[1] += dy / controller.height
         elif buttons & pyglet.window.mouse.RIGHT:
             controlled_shape.rotation[0] += dy / 100
             controlled_shape.rotation[1] -= dx / 100
-            controlled_shape2.rotation[0] += dy / 100
-            controlled_shape2.rotation[1] -= dx / 100
+            #controlled_shape2.rotation[0] += dy / 100
+            #controlled_shape2.rotation[1] -= dx / 100
         elif buttons & pyglet.window.mouse.MIDDLE:
             controlled_shape.scale[0] += dx / 1000
             controlled_shape.scale[1] += dy / 1000
@@ -179,8 +179,8 @@ if __name__=="__main__":
         pipeline.use()
         pipeline["u_model"] = controlled_shape.get_transform()
         controlled_shape.draw()
-        pipeline["u_model"] = controlled_shape2.get_transform()
-        controlled_shape2.draw()
+        #pipeline["u_model"] = controlled_shape2.get_transform()
+        #controlled_shape2.draw()
 
     pyglet.clock.schedule_interval(update, 1/60)
     pyglet.app.run()
