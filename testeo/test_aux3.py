@@ -111,6 +111,46 @@ class Mesh(Model):
 
         super().__init__(positions, colors, indices)
            
+class Camera():
+    def __init__(self, camera_type = "perspective"):
+        self.position = np.array([1,0,0], dtype=np.float32)
+        self.focus = np.array([0,0,0], dtype=np.float32)
+        self.type = camera_type
+
+    def update(self):
+        pass
+
+    def get_view(self):
+        lookAt_matrix = tr.lookAt(self.position, self.focus, np.array([0, 1, 0], dtype=np.float32))
+        return np.reshape(lookAt_matrix, (16, 1), order="F")
+
+    def get_projection(self, width, height):
+        if self.type == "perspective":
+            projection_matrix = tr.perspective(90, width / height, 0.001, 1000)
+        elif self.type == "orthographic":
+            depth = self.position - self.focus
+            depth = np.linalg.norm(depth)
+            projection_matrix = tr.ortho(-(width / height) * depth, (width / height) * depth, -1 * depth, 1 * depth, 0.01, 100)
+        return np.reshape(projection_matrix, (16, 1), order="F")
+        
+class OrbitCamera(Camera):
+    def __init__(self, distance, camera_type = "perspective"):
+        super().__init__(camera_type)
+        self.distance = distance
+        self.phi = 0
+        self.theta = np.pi / 2
+        self.update()
+
+    def update(self):
+        if self.theta > np.pi:
+            self.theta = np.pi
+        elif self.theta < 0:
+            self.theta = 0.0001
+
+        self.position[0] = self.distance * np.sin(self.theta) * np.sin(self.phi)
+        self.position[1] = self.distance * np.cos(self.theta)
+        self.position[2] = self.distance * np.sin(self.theta) * np.cos(self.phi)
+
 
 vertex_source_code = """
     #version 330
@@ -151,10 +191,33 @@ if __name__=="__main__":
     controlled_shape.init_gpu_data(pipeline)
     #controlled_shape2.init_gpu_data(pipeline)
 
+    camera = OrbitCamera(3, "perspective")
+
     def update(dt):
         pass
 
     print("Controles: \n\tClick derecho y arrastrar: rotar")
+
+    print("Controles Cámara:\n\tWASD: Rotar\n\t Q/E: Acercar/Alejar\n\t1/2: Cambiar tipo")
+    def update(dt):
+        if controller.is_key_pressed(pyglet.window.key.A):
+            camera.phi -= dt
+        if controller.is_key_pressed(pyglet.window.key.D):
+            camera.phi += dt
+        if controller.is_key_pressed(pyglet.window.key.W):
+            camera.theta -= dt
+        if controller.is_key_pressed(pyglet.window.key.S):
+            camera.theta += dt
+        if controller.is_key_pressed(pyglet.window.key.Q):
+            camera.distance += dt
+        if controller.is_key_pressed(pyglet.window.key.E):
+            camera.distance -= dt
+        if controller.is_key_pressed(pyglet.window.key._1):
+            camera.type = "perspective"
+        if controller.is_key_pressed(pyglet.window.key._2):
+            camera.type = "orthographic"
+
+        camera.update()
 
     @controller.event
     def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
@@ -177,6 +240,8 @@ if __name__=="__main__":
     def on_draw():
         controller.clear()
         pipeline.use()
+        pipeline["u_view"] = camera.get_view()
+        pipeline["u_projection"] = camera.get_projection(controller.width, controller.height)
         pipeline["u_model"] = controlled_shape.get_transform()
         controlled_shape.draw()
         #pipeline["u_model"] = controlled_shape2.get_transform()
