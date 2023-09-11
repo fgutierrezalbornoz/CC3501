@@ -363,7 +363,11 @@ if __name__ == "__main__":
                    color=shapes.BLUE,
                    transform=tr.scale(2, 1, 2))
     
-    solar_system = SolarSystem(sphere, camera)
+    bunny = Mesh("assets/Stanford_Bunny.stl")
+    bunny.init_gpu_data(mesh_pipeline)
+
+    #solar_system = SolarSystem(sphere, camera)
+    solar_system = SolarSystem(bunny, camera)
     person = Person(cube, camera)
 
     print("Controles Cámara:\n\tWASD: Rotar\n\t Q/E: Acercar/Alejar\n\t1/2: Cambiar tipo")
@@ -425,9 +429,9 @@ if __name__ == "__main__":
         axis_scene.draw()
 
         # Aquí se dibujan los grafos, descomentar según se necesite
-        #graph.draw()
+        graph.draw()
         #solar_system.draw()
-        person.draw()
+        #person.draw()
 
     pyglet.clock.schedule_interval(update, 1/60)
     pyglet.app.run()
