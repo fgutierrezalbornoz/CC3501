@@ -273,6 +273,28 @@ class Car():
         pass
 
 #------------------------------------------------------------
+# Clase Hangar
+#------------------------------------------------------------
+
+class Hangar():
+    def __init__(self, wall_mesh, camera):
+        hangar_system = SceneGraph(camera)
+        hangar_system.add_node("hangar_node", position=[0,0,0])
+        hangar_system.add_node("floor", attach_to="hangar_node", mesh=wall_mesh, color=[0, 1, 0], position=[0,-0.5,0], scale=[3,3,3])
+        hangar_system.add_node("left_wall", attach_to="hangar_node", mesh=wall_mesh, color=[1, 1, 0], position=[-3,1,0],rotation=[0,0,np.pi/2], scale=[1.5,3,3])
+        hangar_system.add_node("right_wall", attach_to="hangar_node", mesh=wall_mesh, color=[1, 1, 0], position=[3,1,0], rotation=[0,0,np.pi/2], scale=[1.5,3,3])
+        hangar_system.add_node("back_wall", attach_to="hangar_node", mesh=wall_mesh, color=[1, 1, 0], position=[0,1,-1.5], rotation=[np.pi/2,0,0], scale=[3,3,3])
+
+
+        self.graph = hangar_system
+
+    def draw(self):
+        self.graph.draw()
+
+    def update(self,dt):
+        pass
+
+#------------------------------------------------------------
 # shaders
 #------------------------------------------------------------
 
@@ -324,9 +346,11 @@ if __name__=="__main__":
 
     
 
-    camera = OrbitCamera(2, "perspective")
+    # camera = OrbitCamera(2, "perspective")
+    camera = OrbitCamera(12, "perspective")
 
     auto= Car(chassis, wheel, platform, camera)
+    hangar = Hangar(platform, camera)
 
     def update(dt):
         pass
@@ -360,13 +384,9 @@ if __name__=="__main__":
         if buttons & pyglet.window.mouse.LEFT:
             chassis.position[0] += dx / controller.width
             chassis.position[1] += dy / controller.height
-            #controlled_shape2.position[0] += dx / controller.width
-            #controlled_shape2.position[1] += dy / controller.height
         elif buttons & pyglet.window.mouse.RIGHT:
             chassis.rotation[0] += dy / 100
             chassis.rotation[1] -= dx / 100
-            #controlled_shape2.rotation[0] += dy / 100
-            #controlled_shape2.rotation[1] -= dx / 100
         elif buttons & pyglet.window.mouse.MIDDLE:
             chassis.scale[0] += dx / 1000
             chassis.scale[1] += dy / 1000
@@ -375,6 +395,7 @@ if __name__=="__main__":
     @controller.event
     def on_draw():
         controller.clear()
+        hangar.draw()
         auto.draw()
 
     pyglet.clock.schedule_interval(update, 1/60)
