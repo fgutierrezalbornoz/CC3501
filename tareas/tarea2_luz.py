@@ -60,6 +60,20 @@ class Car():
         graph.add_node("rfw_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh, position=[-0.642,-0.19,-0.08],
                        pipeline=color_mesh_lit_pipeline, scale=[1/10,1/10,1/10],material=wheel_material)
         
+        graph.add_node("spotlight_"+str(i),
+                       attach_to="platform_"+str(i),
+                   pipeline=color_mesh_lit_pipeline,
+                   position=[0, 0.8, 0],
+                   rotation=[-np.pi/2, 0, 0],
+                   light=SpotLight(
+                          diffuse = [1, 1, 1],
+                          specular = [1, 1, 1],
+                          ambient = [0.15, 0.15, 0.15],
+                          cutOff = 0.91, # siempre mayor a outerCutOff
+                          outerCutOff = 0.82
+                   )
+                )
+        
 
         
 
@@ -68,10 +82,10 @@ class Car():
 
 if __name__ == "__main__":
     # Instancia del controller
-    controller = Controller("Auxiliar 7", width=WIDTH, height=HEIGHT, resizable=True)
+    controller = Controller("Tarea 2", width=WIDTH, height=HEIGHT, resizable=True)
 
-    controller.program_state["camera"] = FreeCamera([2.5, 2.5, 2.5], "perspective")
-    controller.program_state["camera"].yaw = -3* np.pi/ 4
+    controller.program_state["camera"] = FreeCamera([0, 1.5, 2], "perspective")
+    controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
     color_mesh_pipeline = init_pipeline(
@@ -145,11 +159,6 @@ if __name__ == "__main__":
     Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-5,0,0])
     Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[5,0,0])
 
-    graph.add_node("sun",
-                   pipeline=textured_mesh_lit_pipeline,
-                   position=[0, 2, 0],  # Irrelevante, solo se define para posicionar la flecha
-                   rotation=[-3*np.pi/4, 0, 0],
-                   light=DirectionalLight(diffuse = [1, 1, 1], specular = [1, 1, 1], ambient = [1, 1, 1]))
 
     graph.add_node("light",
                    pipeline=color_mesh_lit_pipeline,
@@ -164,42 +173,39 @@ if __name__ == "__main__":
                        )
                     )
 
-    graph.add_node("spotlight",
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[-5, 1, 0.5],
-                   rotation=[-np.pi/2, 0, 0],
-                   light=SpotLight(
-                          diffuse = [1, 1, 1],
-                          specular = [1, 1, 1],
-                          ambient = [0.15, 0.15, 0.15],
-                          cutOff = 0.91, # siempre mayor a outerCutOff
-                          outerCutOff = 0.82
-                   )
-                )
+    
 
-    graph.add_node("arrow",
-                   attach_to="spotlight",
-                   mesh=arrow,
-                   position=[0, 0, 0],
-                   rotation=[-np.pi, 0, 0],
-                   scale=[0.5, 0.5, 0.5],
-                   color=[1, 1, 0],
-                   pipeline=color_mesh_pipeline)
+    # graph.add_node("arrow",
+    #                attach_to="spotlight",
+    #                mesh=arrow,
+    #                position=[0, 0, 0],
+    #                rotation=[-np.pi, 0, 0],
+    #                scale=[0.5, 0.5, 0.5],
+    #                color=[1, 1, 0],
+    #                pipeline=color_mesh_pipeline)
     
 
     # diffuse: Color difuso del material
     # specular: Color especular del material
     # ambient: Color ambiental del material
     # shininess: Exponente especular del material
-    
 
-    textura = Texture("assets/wall1.jpg")
-
-
-
+    posiciones = [[-5,1.5,2], [0,1.5,2], [5,1.5,2]]
+    k=0
     def update(dt):
+        global k
+        global posiciones
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
+
+        graph["car_1"]["rotation"][1] += 2*dt
+        graph["platform_1"]["rotation"][1] += 2*dt
+        graph["car_0"]["rotation"][1] += 2*dt
+        graph["platform_0"]["rotation"][1] += 2*dt
+        graph["car_2"]["rotation"][1] += 2*dt
+        graph["platform_2"]["rotation"][1] += 2*dt
+
+        
         if controller.is_key_pressed(pyglet.window.key.A):
             camera.position -= camera.right * dt
         if controller.is_key_pressed(pyglet.window.key.D):
@@ -216,6 +222,10 @@ if __name__ == "__main__":
             camera.type = "perspective"
         if controller.is_key_pressed(pyglet.window.key._2):
             camera.type = "orthographic"
+        if controller.is_key_pressed(pyglet.window.key.O):
+            k+=1
+            k=k%3
+            camera.position = posiciones[k]
         camera.update()
 
     @controller.event
