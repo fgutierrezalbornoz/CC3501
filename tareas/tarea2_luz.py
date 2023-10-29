@@ -17,8 +17,8 @@ from auxiliares.utils.scene_graph import SceneGraph
 from auxiliares.utils.drawables import Model, Texture, DirectionalLight, PointLight, SpotLight, Material
 from auxiliares.utils.helpers import init_axis, init_pipeline, mesh_from_file, get_path
 
-WIDTH = 640
-HEIGHT = 640
+WIDTH = 720
+HEIGHT = 720
 
 class Controller(pyglet.window.Window):
     def __init__(self, title, *args, **kargs):
@@ -121,13 +121,6 @@ if __name__ == "__main__":
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
-    color_mesh_pipeline = init_pipeline(
-        get_path("auxiliares/shaders/color_mesh.vert"),
-        get_path("auxiliares/shaders/color_mesh.frag"))
-    
-    textured_mesh_pipeline = init_pipeline(
-        get_path("auxiliares/shaders/textured_mesh.vert"),
-        get_path("auxiliares/shaders/textured_mesh.frag"))
     
     textured_mesh_lit_pipeline = init_pipeline(
         get_path("auxiliares/shaders/textured_mesh_lit.vert"),
@@ -147,14 +140,18 @@ if __name__ == "__main__":
     wheel_mesh = mesh_from_file("testeo/wacky_races/right_front_wheel.stl")[0]["mesh"]
     platform_mesh = mesh_from_file("testeo/wacky_races/circular_platform.stl")[0]["mesh"]
 
-    chassis1_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
-    wheel1_mesh = mesh_from_file("testeo/wacky_races/mean_machine_wheels.stl")[0]["mesh"]
+    chassis0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
+    wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_wheels.stl")[0]["mesh"]
 
-    chassis2_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
-    wheel2_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_wheels.stl")[0]["mesh"]
+    chassis1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
+    wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_wheels.stl")[0]["mesh"]
 
-    chassis3_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
-    wheel3_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_wheels.stl")[0]["mesh"]
+    chassis2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
+    wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_wheels.stl")[0]["mesh"]
+
+    chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
+    wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_wheels.stl")[0]["mesh"]
+
 
     graph = SceneGraph(controller)
 
@@ -196,6 +193,18 @@ if __name__ == "__main__":
         specular =	[0.633, 0.727811, 0.633],
         ambient	= [0.0215, 0.1745, 0.0215],
         shininess = sh *0.6)
+    
+    obsidian = Material(
+        diffuse = [0.18275, 0.17, 0.22525],
+        specular =	[0.332741, 0.328634, 0.346435],
+        ambient	= [	0.05375, 0.05, 0.06625],
+        shininess = sh *0.3)
+    
+    chrome = Material(
+        diffuse = [0.4, 0.4, 0.4],
+        specular =	[0.774597, 0.774597, 0.774597],
+        ambient	= [0.25, 0.25, 0.25],
+        shininess = sh *0.6)
 
 
 
@@ -203,9 +212,10 @@ if __name__ == "__main__":
     
     # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-5,0,0])
     # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[5,0,0])
-    Car2(chassis1_mesh, wheel1_mesh, platform_mesh, graph, [material, rubber, silver], i=0,pos=[2,0,0], chassis_pos=[0.2,0.1,0],wheel_pos=[0,-0.07,0])
-    Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-2,0,0], chassis_pos=[-0.125,0.355,0])
-    Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
+    Car2(chassis0_mesh, wheel0_mesh, platform_mesh, graph, [material, rubber, silver], i=0,pos=[2,0,0], chassis_pos=[0.2,0.1,0],wheel_pos=[0,-0.07,0])
+    Car2(chassis1_mesh, wheel1_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-2,0,0], chassis_pos=[-0.125,0.355,0])
+    Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
+    Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [chrome, rubber, silver], i=3,pos=[-6,0,0], chassis_pos=[0,0.15,0],wheel_pos=[0,-0.04,0])
 
 
     graph.add_node("light",
@@ -230,7 +240,7 @@ if __name__ == "__main__":
                    rotation = [-np.pi/2, 0, 0],
                    scale = [16, 4, 1],
                    position = [0,-0.5,0],
-                   material = material)
+                   material = obsidian)
     
     graph.add_node("wall",
                    attach_to="hangar",
@@ -259,6 +269,7 @@ if __name__ == "__main__":
                    position = [-8,1.5,0],
                    material = emerald)
 
+
     # graph.add_node("arrow",
     #                attach_to="spotlight",
     #                mesh=arrow,
@@ -282,12 +293,8 @@ if __name__ == "__main__":
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
 
-        # graph["car_1"]["rotation"][1] += 2*dt
-        # graph["platform_1"]["rotation"][1] += 2*dt
-        # graph["car_0"]["rotation"][1] += 2*dt
-        # graph["platform_0"]["rotation"][1] += 2*dt
-        # graph["car_2"]["rotation"][1] += 2*dt
-        # graph["platform_2"]["rotation"][1] += 2*dt
+        # graph["car_"+str(k)]["rotation"][1] += 2*dt
+        # graph["platform_"+str(k)]["rotation"][1] += 2*dt
 
         
         if controller.is_key_pressed(pyglet.window.key.A):
