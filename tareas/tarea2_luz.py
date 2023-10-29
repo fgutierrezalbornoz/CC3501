@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # Instancia del controller
     controller = Controller("Tarea 2", width=WIDTH, height=HEIGHT, resizable=True)
 
-    controller.program_state["camera"] = FreeCamera([0, 1.5, 2], "perspective")
+    controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
@@ -203,9 +203,9 @@ if __name__ == "__main__":
     
     # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-5,0,0])
     # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[5,0,0])
-    Car2(chassis1_mesh, wheel1_mesh, platform_mesh, graph, [material, rubber, silver], i=0,pos=[0,0,0], chassis_pos=[0.5,0.1,0],wheel_pos=[0,-0.07,0])
-    Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-5,0,0], chassis_pos=[-0.125,0.355,0])
-    Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[5,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
+    Car2(chassis1_mesh, wheel1_mesh, platform_mesh, graph, [material, rubber, silver], i=0,pos=[2,0,0], chassis_pos=[0.2,0.1,0],wheel_pos=[0,-0.07,0])
+    Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-2,0,0], chassis_pos=[-0.125,0.355,0])
+    Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
 
 
     graph.add_node("light",
@@ -221,7 +221,43 @@ if __name__ == "__main__":
                        )
                     )
 
+    graph.add_node("hangar",position=[0,0,0])
+
+    graph.add_node("floor",
+                   attach_to="hangar",
+                   mesh = cube,
+                   pipeline = color_mesh_lit_pipeline,
+                   rotation = [-np.pi/2, 0, 0],
+                   scale = [16, 4, 1],
+                   position = [0,-0.5,0],
+                   material = material)
     
+    graph.add_node("wall",
+                   attach_to="hangar",
+                   mesh = cube,
+                   pipeline = color_mesh_lit_pipeline,
+                   rotation = [0, 0, 0],
+                   scale = [16, 4, 0.25],
+                   position = [0,1.5,-2],
+                   material = emerald)
+    
+    graph.add_node("right_wall",
+                   attach_to="hangar",
+                   mesh = cube,
+                   pipeline = color_mesh_lit_pipeline,
+                   rotation = [0, -np.pi/2, 0],
+                   scale = [4, 4, 0.25],
+                   position = [8,1.5,0],
+                   material = emerald)
+    
+    graph.add_node("left_wall",
+                   attach_to="hangar",
+                   mesh = cube,
+                   pipeline = color_mesh_lit_pipeline,
+                   rotation = [0, -np.pi/2, 0],
+                   scale = [4, 4, 0.25],
+                   position = [-8,1.5,0],
+                   material = emerald)
 
     # graph.add_node("arrow",
     #                attach_to="spotlight",
@@ -238,7 +274,7 @@ if __name__ == "__main__":
     # ambient: Color ambiental del material
     # shininess: Exponente especular del material
 
-    posiciones = [[-5,1.5,2], [0,1.5,2], [5,1.5,2]]
+    posiciones = [[-2,1.5,2], [2,1.5,2], [6,1.5,2]]
     k=2
     def update(dt):
         global k
