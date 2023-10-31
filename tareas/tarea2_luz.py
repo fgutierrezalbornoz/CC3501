@@ -39,7 +39,30 @@ class Controller(pyglet.window.Window):
 
     def is_key_pressed(self, key):
         return self.key_handler[key]
-    
+
+class Car_info():
+    def __init__(self, chassis, front_wheels, rear_wheels, i=0):
+        self.car_number = i
+        self.chassis_mesh = mesh_from_file(chassis)[0]["mesh"]
+        self.chassis_position = [0,0,0]
+        self.chassis_scale = [1,1,1]
+        self.chassis_material = None
+        self.front_wheels_mesh = mesh_from_file(front_wheels)[0]["mesh"]
+        self.front_wheels_position = [0,0,0]
+        self.front_wheels_scale = [1,1,1]
+        self.front_wheels_material = None
+        self.rear_wheels_mesh = mesh_from_file(rear_wheels)[0]["mesh"]
+        self.rear_wheels_position = [0,0,0]
+        self.rear_wheels_scale = [1,1,1]
+        self.rear_wheels_material = None
+
+class Platform_info():
+    def __init__(self, platform):
+        self.mesh = mesh_from_file(platform)[0]["mesh"]
+        self.position = [0,0,0]
+        self.scale = [1,1,1]
+        self.material = None
+
 class Car():
     def __init__(self, chassis_mesh, wheel_mesh, platform_mesh, graph, material, i=0, pos=[0,0,0]):
 
@@ -109,24 +132,22 @@ class Car2():
         
 
 class Car3():
-    def __init__(self, mesh, graph, material, i=0, chassis_pos=[0,0,0], front_wheel_pos=[0,0,0], rear_wheel_pos=[0,0,0],pos=[0,0,0]):
-        
-        chassis_mesh, front_wheel_mesh, rear_wheel_mesh, platform_mesh = mesh
-        chassis_material, wheel_material, platform_material=material
+    def __init__(self, car, platform, graph, pos=[0,0,0]):
+        i=car.car_number
         graph.add_node("car_system_"+str(i),position=pos)
-        graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform_mesh, 
-                       color=[0.5, 0.5, 0.5], pipeline=color_mesh_lit_pipeline, material=platform_material, 
-                       scale=[2,2,2])
+        graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform.mesh, 
+                       color=[0.5, 0.5, 0.5], pipeline=color_mesh_lit_pipeline, material=platform.material, 
+                       scale=platform.scale)
         graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0])
-        # graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0.2,0.31,0])
-        graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=chassis_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[1,1,1],material=chassis_material, 
-                       position = chassis_pos)
-        graph.add_node("front_wheel_"+str(i), attach_to="car_"+str(i), mesh=front_wheel_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[0.5,0.5,0.5], material=wheel_material, position = front_wheel_pos)
+
+        graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=car.chassis_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.chassis_scale,material=car.chassis_material, 
+                       position = car.chassis_position)
+        graph.add_node("front_wheel_"+str(i), attach_to="car_"+str(i), mesh=car.front_wheels_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.front_wheels_scale, material=car.front_wheels_material, position = car.front_wheels_position)
         
-        graph.add_node("rear_wheel_"+str(i), attach_to="car_"+str(i), mesh=rear_wheel_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[0.5,0.5,0.5], material=wheel_material, position = rear_wheel_pos)
+        graph.add_node("rear_wheel_"+str(i), attach_to="car_"+str(i), mesh=car.rear_wheels_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.rear_wheels_scale, material=car.rear_wheels_material, position = car.rear_wheels_position)
 
         
         graph.add_node("spotlight_"+str(i),
@@ -153,7 +174,8 @@ if __name__ == "__main__":
     # Instancia del controller
     controller = Controller("Tarea 2", width=WIDTH, height=HEIGHT, resizable=True)
 
-    controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
+    # controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
+    controller.program_state["camera"] = FreeCamera([6, 1.5, 2], "perspective")
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
@@ -188,21 +210,21 @@ if __name__ == "__main__":
     # chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
     # wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_wheels.stl")[0]["mesh"]
 
-    chassis0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
-    front_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_front_wheels.stl")[0]["mesh"]
-    rear_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_rear_wheels.stl")[0]["mesh"]
+    # chassis0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
+    # front_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_front_wheels.stl")[0]["mesh"]
+    # rear_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_rear_wheels.stl")[0]["mesh"]
 
-    chassis1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
-    front_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_front_wheels.stl")[0]["mesh"]
-    rear_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_rear_wheels.stl")[0]["mesh"]
+    # chassis1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
+    # front_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_front_wheels.stl")[0]["mesh"]
+    # rear_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_rear_wheels.stl")[0]["mesh"]
 
-    chassis2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
-    front_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_front_wheels.stl")[0]["mesh"]
-    rear_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_rear_wheels.stl")[0]["mesh"]
+    # chassis2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
+    # front_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_front_wheels.stl")[0]["mesh"]
+    # rear_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_rear_wheels.stl")[0]["mesh"]
 
-    chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
-    front_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_front_wheels.stl")[0]["mesh"]
-    rear_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_rear_wheels.stl")[0]["mesh"]
+    # chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
+    # front_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_front_wheels.stl")[0]["mesh"]
+    # rear_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_rear_wheels.stl")[0]["mesh"]
 
 
     graph = SceneGraph(controller)
@@ -271,13 +293,76 @@ if __name__ == "__main__":
     # Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
     # Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [chrome, rubber, silver], i=3,pos=[-6,0,0], chassis_pos=[0,0.15,0],wheel_pos=[0,-0.04,0])
 
-    Car3([chassis0_mesh, front_wheel0_mesh, rear_wheel0_mesh, platform_mesh], graph, [material, rubber, silver], i=0,pos=[2,0,0], chassis_pos=[0.2,0.1,0],
-         front_wheel_pos=[0,-0.07,0], rear_wheel_pos=[0,-0.07,0])
-    Car3([chassis1_mesh, front_wheel1_mesh, rear_wheel1_mesh, platform_mesh], graph, [emerald, rubber,  silver], i=1,pos=[-2,0,0], chassis_pos=[-0.125,0.355,0])
-    Car3([chassis2_mesh, front_wheel2_mesh, rear_wheel2_mesh, platform_mesh], graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],
-         front_wheel_pos=[-0.4,0,0],rear_wheel_pos=[-0.4,0,0])
-    Car3([chassis3_mesh, front_wheel3_mesh, rear_wheel3_mesh, platform_mesh], graph, [chrome, rubber, silver], i=3,pos=[-6,0,0], chassis_pos=[0,0.15,0],
-         front_wheel_pos=[0,-0.04,0], rear_wheel_pos=[0,-0.04,0])
+
+    
+    platform = Platform_info("testeo/wacky_races/circular_platform.stl")
+
+    platform.material=silver
+    platform.position=[0,0,0]
+    platform.scale=[2,2,2]
+
+
+#Seteo mean machine listo
+
+    # car_0=Car_info("testeo/wacky_races/mean_machine_chassis.stl", 
+    #          "testeo/wacky_races/mean_machine_front_wheels.stl", 
+    #          "testeo/wacky_races/mean_machine_rear_wheels.stl", 0)
+    
+    # car_0.rear_wheels_material=rubber
+    # car_0.front_wheels_material=rubber
+    # car_0.chassis_material=material
+    # car_0.chassis_position=[0.2,0.1,0]
+    # car_0.front_wheels_position=[-0.435,-0.1,0]
+    # car_0.front_wheels_scale=[0.2,0.2,0.2]
+    # car_0.rear_wheels_position=[0.28,-0.1,0]#[0.25,-0.07,0]
+    # car_0.rear_wheels_scale=[0.3,0.3,0.3]
+
+    # Car3(car_0, platform, graph, pos=[2,0,0])
+
+#Seteo army surplus special listo
+
+
+    # car_1=Car_info("testeo/wacky_races/army_surplus_special_chassis.stl", 
+    #          "testeo/wacky_races/army_surplus_special_front_wheels.stl", 
+    #          "testeo/wacky_races/army_surplus_special_rear_wheels.stl", 1)
+    
+    # car_1.rear_wheels_material=rubber
+    # car_1.front_wheels_material=rubber
+    # car_1.chassis_material=emerald
+    # car_1.chassis_position=[-0.125,0.335,0]
+    # car_1.front_wheels_position=[0.55,-0.09,0]
+    # car_1.front_wheels_scale=[0.2,0.2,0.2]
+    # car_1.rear_wheels_position=[0,-0.03,0]
+    # car_1.rear_wheels_scale=[0.5,0.5,0.5]
+
+    # Car3(car_1, platform, graph, pos=[-2,0,0])
+
+
+    car_2=Car_info("testeo/wacky_races/turbo_terrific_chassis.stl", 
+             "testeo/wacky_races/turbo_terrific_front_wheels.stl", 
+             "testeo/wacky_races/turbo_terrific_rear_wheels.stl", 2)
+    
+    car_2.rear_wheels_material=rubber
+    car_2.front_wheels_material=rubber
+    car_2.chassis_material=gold
+    car_2.chassis_position=[-0.025,-0.045,0]
+    car_2.front_wheels_position=[-0.4,0,0]
+    car_2.rear_wheels_position=[-0.4,0,0]
+
+    Car3(car_2, platform, graph, pos=[6,0,0])
+
+    # car_3=Car_info("testeo/wacky_races/bulletproof_bomb_chassis.stl", 
+    #          "testeo/wacky_races/bulletproof_bomb_front_wheels.stl", 
+    #          "testeo/wacky_races/bulletproof_bomb_rear_wheels.stl", 3)
+    
+    # car_3.rear_wheels_material=rubber
+    # car_3.front_wheels_material=rubber
+    # car_3.chassis_material=chrome
+    # car_3.chassis_position=[0,0.15,0]
+    # car_3.front_wheels_position=[0,-0.04,0]
+    # car_3.rear_wheels_position=[0,-0.04,0]
+    
+    # Car3(car_3, platform, graph ,pos=[-6,0,0])
 
 
     graph.add_node("light",
