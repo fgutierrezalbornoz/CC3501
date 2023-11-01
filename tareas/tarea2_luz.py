@@ -14,7 +14,7 @@ sys.path.append('../../')
 import auxiliares.utils.shapes as shapes
 from auxiliares.utils.camera import FreeCamera
 from auxiliares.utils.scene_graph import SceneGraph
-from auxiliares.utils.drawables import Model, Texture, DirectionalLight, PointLight, SpotLight, Material
+from auxiliares.utils.drawables import Model, DirectionalLight, PointLight, SpotLight, Material
 from auxiliares.utils.helpers import init_axis, init_pipeline, mesh_from_file, get_path
 
 WIDTH = 720
@@ -64,79 +64,11 @@ class Platform_info():
         self.material = None
 
 class Car():
-    def __init__(self, chassis_mesh, wheel_mesh, platform_mesh, graph, material, i=0, pos=[0,0,0]):
-
-        chassis_material, wheel_material, platform_material=material
-        graph.add_node("car_system_"+str(i),position=pos)
-        graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform_mesh, 
-                       color=[0.5, 0.5, 0.5], pipeline=color_mesh_lit_pipeline, material=platform_material, 
-                       scale=[2,2,2])
-        graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0.2,0.31,0])
-        graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=chassis_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[1,1,1],material=chassis_material)
-        graph.add_node("lrw_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh, position=[0.08,-0.19,0.16],
-                       pipeline=color_mesh_lit_pipeline, scale=[1/10,1/10,1/10],material=wheel_material)
-        graph.add_node("rrw_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh, position=[0.08,-0.19,-0.16],
-                       pipeline=color_mesh_lit_pipeline, scale=[1/10,1/10,1/10],material=wheel_material)
-        graph.add_node("lfw_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh, position=[-0.642,-0.19,0.08],
-                       pipeline=color_mesh_lit_pipeline, scale=[1/10,1/10,1/10],material=wheel_material)
-        graph.add_node("rfw_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh, position=[-0.642,-0.19,-0.08],
-                       pipeline=color_mesh_lit_pipeline, scale=[1/10,1/10,1/10],material=wheel_material)
-        
-        graph.add_node("spotlight_"+str(i),
-                       attach_to="platform_"+str(i),
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[0, 0.8, 0],
-                   rotation=[-np.pi/2, 0, 0],
-                   light=SpotLight(
-                          diffuse = [1, 1, 1],
-                          specular = [1, 1, 1],
-                          ambient = [0.15, 0.15, 0.15],
-                          cutOff = 0.91, # siempre mayor a outerCutOff
-                          outerCutOff = 0.82
-                   )
-                )
-        
-
-class Car2():
-    def __init__(self, chassis_mesh, wheel_mesh, platform_mesh, graph, 
-                 material, i=0, chassis_pos=[0,0,0], wheel_pos=[0,0,0], pos=[0,0,0]):
-
-        chassis_material, wheel_material, platform_material=material
-        graph.add_node("car_system_"+str(i),position=pos)
-        graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform_mesh, 
-                       color=[0.5, 0.5, 0.5], pipeline=color_mesh_lit_pipeline, material=platform_material, 
-                       scale=[2,2,2])
-        graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0])
-        # graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0.2,0.31,0])
-        graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=chassis_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[1,1,1],material=chassis_material, 
-                       position = chassis_pos)
-        graph.add_node("wheel_"+str(i), attach_to="car_"+str(i), mesh=wheel_mesh,
-                       pipeline=color_mesh_lit_pipeline, scale=[0.7,0.7,0.7], material=wheel_material, position = wheel_pos)
-
-        
-        graph.add_node("spotlight_"+str(i),
-                       attach_to="platform_"+str(i),
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[0, 0.8, 0],
-                   rotation=[-np.pi/2, 0, 0],
-                   light=SpotLight(
-                          diffuse = [1, 1, 1],
-                          specular = [1, 1, 1],
-                          ambient = [0.15, 0.15, 0.15],
-                          cutOff = 0.91, # siempre mayor a outerCutOff
-                          outerCutOff = 0.82
-                   )
-                )
-        
-
-class Car3():
     def __init__(self, car, platform, graph, pos=[0,0,0]):
         i=car.car_number
         graph.add_node("car_system_"+str(i),position=pos)
         graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform.mesh, 
-                       color=[0.5, 0.5, 0.5], pipeline=color_mesh_lit_pipeline, material=platform.material, 
+                       pipeline=color_mesh_lit_pipeline, material=platform.material, 
                        scale=platform.scale)
         graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0])
 
@@ -175,57 +107,14 @@ if __name__ == "__main__":
     controller = Controller("Tarea 2", width=WIDTH, height=HEIGHT, resizable=True)
 
     controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
-    # controller.program_state["camera"] = FreeCamera([-6, 1.5, 2], "perspective")
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
-
-    
-    textured_mesh_lit_pipeline = init_pipeline(
-        get_path("auxiliares/shaders/textured_mesh_lit.vert"),
-        get_path("auxiliares/shaders/textured_mesh_lit.frag"))
     
     color_mesh_lit_pipeline = init_pipeline(
         get_path("auxiliares/shaders/color_mesh_lit.vert"),
         get_path("auxiliares/shaders/color_mesh_lit.frag"))
 
     cube = Model(shapes.Cube["position"], shapes.Cube["uv"], shapes.Cube["normal"], index_data=shapes.Cube["indices"])
-    quad = Model(shapes.Square["position"], shapes.Square["uv"], shapes.Square["normal"], index_data=shapes.Square["indices"])
-    arrow = mesh_from_file("assets/arrow.off")[0]["mesh"]
-
-    
-
-    # chassis_mesh = mesh_from_file("testeo/wacky_races/auto_completo.stl")[0]["mesh"]
-    # wheel_mesh = mesh_from_file("testeo/wacky_races/right_front_wheel.stl")[0]["mesh"]
-    platform_mesh = mesh_from_file("testeo/wacky_races/circular_platform.stl")[0]["mesh"]
-
-    # chassis0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
-    # wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_wheels.stl")[0]["mesh"]
-
-    # chassis1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
-    # wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_wheels.stl")[0]["mesh"]
-
-    # chassis2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
-    # wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_wheels.stl")[0]["mesh"]
-
-    # chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
-    # wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_wheels.stl")[0]["mesh"]
-
-    # chassis0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_chassis.stl")[0]["mesh"]
-    # front_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_front_wheels.stl")[0]["mesh"]
-    # rear_wheel0_mesh = mesh_from_file("testeo/wacky_races/mean_machine_rear_wheels.stl")[0]["mesh"]
-
-    # chassis1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_chassis.stl")[0]["mesh"]
-    # front_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_front_wheels.stl")[0]["mesh"]
-    # rear_wheel1_mesh = mesh_from_file("testeo/wacky_races/army_surplus_special_rear_wheels.stl")[0]["mesh"]
-
-    # chassis2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_chassis.stl")[0]["mesh"]
-    # front_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_front_wheels.stl")[0]["mesh"]
-    # rear_wheel2_mesh = mesh_from_file("testeo/wacky_races/turbo_terrific_rear_wheels.stl")[0]["mesh"]
-
-    # chassis3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_chassis.stl")[0]["mesh"]
-    # front_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_front_wheels.stl")[0]["mesh"]
-    # rear_wheel3_mesh = mesh_from_file("testeo/wacky_races/bulletproof_bomb_rear_wheels.stl")[0]["mesh"]
-
 
     graph = SceneGraph(controller)
 
@@ -292,20 +181,6 @@ if __name__ == "__main__":
         ambient	= [0.1745, 0.01175, 0.01175],
         shininess = sh *0.6)
 
-
-
-    # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [material, rubber, silver], pos=[0,0,0])
-    
-    # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-5,0,0])
-    # Car(chassis_mesh, wheel_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[5,0,0])
-
-
-    # Car2(chassis0_mesh, wheel0_mesh, platform_mesh, graph, [material, rubber, silver], i=0,pos=[2,0,0], chassis_pos=[0.2,0.1,0],wheel_pos=[0,-0.07,0])
-    # Car2(chassis1_mesh, wheel1_mesh, platform_mesh, graph, [emerald, rubber,  silver], i=1,pos=[-2,0,0], chassis_pos=[-0.125,0.355,0])
-    # Car2(chassis2_mesh, wheel2_mesh, platform_mesh, graph, [gold, rubber, silver], i=2,pos=[6,0,0], chassis_pos=[-0.025,-0.045,0],wheel_pos=[-0.4,0,0])
-    # Car2(chassis3_mesh, wheel3_mesh, platform_mesh, graph, [chrome, rubber, silver], i=3,pos=[-6,0,0], chassis_pos=[0,0.15,0],wheel_pos=[0,-0.04,0])
-
-
     
     platform = Platform_info("testeo/wacky_races/circular_platform.stl")
 
@@ -314,7 +189,7 @@ if __name__ == "__main__":
     platform.scale=[2,2,2]
 
 
-#Seteo mean machine listo
+#Seteo mean machine
 
     car_0=Car_info("testeo/wacky_races/mean_machine_chassis.stl", 
              "testeo/wacky_races/mean_machine_front_wheels.stl", 
@@ -326,12 +201,12 @@ if __name__ == "__main__":
     car_0.chassis_position=[0.2,0.1,0]
     car_0.front_wheels_position=[-0.435,-0.1,0]
     car_0.front_wheels_scale=[0.2,0.2,0.2]
-    car_0.rear_wheels_position=[0.28,-0.1,0]#[0.25,-0.07,0]
+    car_0.rear_wheels_position=[0.28,-0.1,0]
     car_0.rear_wheels_scale=[0.3,0.3,0.3]
 
-    Car3(car_0, platform, graph, pos=[2,0,0])
+    Car(car_0, platform, graph, pos=[2,0,0])
 
-# Seteo army surplus special listo
+# Seteo army surplus special
 
 
     car_1=Car_info("testeo/wacky_races/army_surplus_special_chassis.stl", 
@@ -347,9 +222,9 @@ if __name__ == "__main__":
     car_1.rear_wheels_position=[0,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
-    Car3(car_1, platform, graph, pos=[-2,0,0])
+    Car(car_1, platform, graph, pos=[-2,0,0])
 
-#Seteo turbo terrific listo
+#Seteo turbo terrific
 
     car_2=Car_info("testeo/wacky_races/turbo_terrific_chassis.stl", 
              "testeo/wacky_races/turbo_terrific_front_wheels.stl", 
@@ -357,14 +232,14 @@ if __name__ == "__main__":
     
     car_2.rear_wheels_material=rubber
     car_2.front_wheels_material=rubber
-    car_2.chassis_material=gold
+    car_2.chassis_material=ruby
     car_2.chassis_position=[-0.025,-0.045,0]
     car_2.front_wheels_position=[0.375,-0.105,0]
     car_2.front_wheels_scale=[0.225,0.225,0.225]
     car_2.rear_wheels_position=[-0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
-    Car3(car_2, platform, graph, pos=[6,0,0])
+    Car(car_2, platform, graph, pos=[6,0,0])
 
 #Seteo bulletproof bomb
 
@@ -374,14 +249,14 @@ if __name__ == "__main__":
     
     car_3.rear_wheels_material=rubber
     car_3.front_wheels_material=rubber
-    car_3.chassis_material=chrome
+    car_3.chassis_material=cooper
     car_3.chassis_position=[0,0.14,0]
     car_3.front_wheels_position=[-0.642,0.0,0.087]
     car_3.front_wheels_scale=[0.505,0.505,0.505]
     car_3.rear_wheels_position=[0.527,0.004,-0.012]
     car_3.rear_wheels_scale=[0.42,0.42,0.42]
     
-    Car3(car_3, platform, graph ,pos=[-6,0,0])
+    Car(car_3, platform, graph ,pos=[-6,0,0])
 
 
     graph.add_node("light",
@@ -396,21 +271,10 @@ if __name__ == "__main__":
                        #quadratic = 1.8
                        )
                     )
-    
-    graph.add_node("light2",
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[-6, 1, 2],
-                   light=PointLight(
-                       diffuse = [1, 1, 1], # rojo
-                       specular = [0.8, 0.8, 0.8], # azul
-                       ambient = [0, 0.15, 0], # verde
-                       #constant = 1.0,
-                       #linear = 0.7,
-                       #quadratic = 1.8
-                       )
-                    )
 
     graph.add_node("hangar",position=[0,0,0])
+    hangar_floor_material = gold
+    hangar_wall_material = gold
 
     graph.add_node("floor",
                    attach_to="hangar",
@@ -419,7 +283,7 @@ if __name__ == "__main__":
                    rotation = [-np.pi/2, 0, 0],
                    scale = [16, 4, 1],
                    position = [0,-0.5,0],
-                   material = silver)
+                   material = hangar_floor_material)
     
     graph.add_node("wall",
                    attach_to="hangar",
@@ -428,7 +292,7 @@ if __name__ == "__main__":
                    rotation = [0, 0, 0],
                    scale = [16, 4, 0.25],
                    position = [0,1.5,-2],
-                   material = ruby)
+                   material = hangar_wall_material)
     
     graph.add_node("right_wall",
                    attach_to="hangar",
@@ -437,7 +301,7 @@ if __name__ == "__main__":
                    rotation = [0, -np.pi/2, 0],
                    scale = [4, 4, 0.25],
                    position = [8,1.5,0],
-                   material = emerald)
+                   material = hangar_wall_material)
     
     graph.add_node("left_wall",
                    attach_to="hangar",
@@ -446,23 +310,8 @@ if __name__ == "__main__":
                    rotation = [0, -np.pi/2, 0],
                    scale = [4, 4, 0.25],
                    position = [-8,1.5,0],
-                   material = emerald)
+                   material = hangar_wall_material)
 
-
-    # graph.add_node("arrow",
-    #                attach_to="spotlight",
-    #                mesh=arrow,
-    #                position=[0, 0, 0],
-    #                rotation=[-np.pi, 0, 0],
-    #                scale=[0.5, 0.5, 0.5],
-    #                color=[1, 1, 0],
-    #                pipeline=color_mesh_pipeline)
-    
-
-    # diffuse: Color difuso del material
-    # specular: Color especular del material
-    # ambient: Color ambiental del material
-    # shininess: Exponente especular del material
 
     posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
     k=0
@@ -476,13 +325,13 @@ if __name__ == "__main__":
         graph["platform_"+str(k)]["rotation"][1] += 2*dt
 
         
-        if controller.is_key_pressed(pyglet.window.key.A):
+        if controller.is_key_pressed(pyglet.window.key.LEFT):
             camera.position -= camera.right * dt
-        if controller.is_key_pressed(pyglet.window.key.D):
+        if controller.is_key_pressed(pyglet.window.key.RIGHT):
             camera.position += camera.right * dt
-        if controller.is_key_pressed(pyglet.window.key.W):
+        if controller.is_key_pressed(pyglet.window.key.UP):
             camera.position += camera.forward * dt
-        if controller.is_key_pressed(pyglet.window.key.S):
+        if controller.is_key_pressed(pyglet.window.key.DOWN):
             camera.position -= camera.forward * dt
         if controller.is_key_pressed(pyglet.window.key.Q):
             camera.position[1] -= dt
@@ -492,7 +341,7 @@ if __name__ == "__main__":
             camera.type = "perspective"
         if controller.is_key_pressed(pyglet.window.key._2):
             camera.type = "orthographic"
-        if controller.is_key_pressed(pyglet.window.key.O):
+        if controller.is_key_pressed(pyglet.window.key.W):
             k+=1
             k=k%4
             camera.position = posiciones[k]
