@@ -174,8 +174,8 @@ if __name__ == "__main__":
     # Instancia del controller
     controller = Controller("Tarea 2", width=WIDTH, height=HEIGHT, resizable=True)
 
-    # controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
-    controller.program_state["camera"] = FreeCamera([6, 1.5, 2], "perspective")
+    controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
+    # controller.program_state["camera"] = FreeCamera([-6, 1.5, 2], "perspective")
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
@@ -279,6 +279,18 @@ if __name__ == "__main__":
         specular =	[0.774597, 0.774597, 0.774597],
         ambient	= [0.25, 0.25, 0.25],
         shininess = sh *0.6)
+    
+    cooper = Material(
+        diffuse = [0.7038, 0.27048, 0.0828],
+        specular =	[0.256777, 0.137622, 0.086014],
+        ambient	= [0.19125, 0.0735, 0.0225],
+        shininess = sh *0.1)
+    
+    ruby = Material(
+        diffuse = [0.61424, 0.04136, 0.04136],
+        specular =	[0.727811, 0.626959, 0.626959],
+        ambient	= [0.1745, 0.01175, 0.01175],
+        shininess = sh *0.6)
 
 
 
@@ -297,46 +309,47 @@ if __name__ == "__main__":
     
     platform = Platform_info("testeo/wacky_races/circular_platform.stl")
 
-    platform.material=silver
+    platform.material=obsidian
     platform.position=[0,0,0]
     platform.scale=[2,2,2]
 
 
 #Seteo mean machine listo
 
-    # car_0=Car_info("testeo/wacky_races/mean_machine_chassis.stl", 
-    #          "testeo/wacky_races/mean_machine_front_wheels.stl", 
-    #          "testeo/wacky_races/mean_machine_rear_wheels.stl", 0)
+    car_0=Car_info("testeo/wacky_races/mean_machine_chassis.stl", 
+             "testeo/wacky_races/mean_machine_front_wheels.stl", 
+             "testeo/wacky_races/mean_machine_rear_wheels.stl", 0)
     
-    # car_0.rear_wheels_material=rubber
-    # car_0.front_wheels_material=rubber
-    # car_0.chassis_material=material
-    # car_0.chassis_position=[0.2,0.1,0]
-    # car_0.front_wheels_position=[-0.435,-0.1,0]
-    # car_0.front_wheels_scale=[0.2,0.2,0.2]
-    # car_0.rear_wheels_position=[0.28,-0.1,0]#[0.25,-0.07,0]
-    # car_0.rear_wheels_scale=[0.3,0.3,0.3]
+    car_0.rear_wheels_material=rubber
+    car_0.front_wheels_material=rubber
+    car_0.chassis_material=material
+    car_0.chassis_position=[0.2,0.1,0]
+    car_0.front_wheels_position=[-0.435,-0.1,0]
+    car_0.front_wheels_scale=[0.2,0.2,0.2]
+    car_0.rear_wheels_position=[0.28,-0.1,0]#[0.25,-0.07,0]
+    car_0.rear_wheels_scale=[0.3,0.3,0.3]
 
-    # Car3(car_0, platform, graph, pos=[2,0,0])
+    Car3(car_0, platform, graph, pos=[2,0,0])
 
-#Seteo army surplus special listo
+# Seteo army surplus special listo
 
 
-    # car_1=Car_info("testeo/wacky_races/army_surplus_special_chassis.stl", 
-    #          "testeo/wacky_races/army_surplus_special_front_wheels.stl", 
-    #          "testeo/wacky_races/army_surplus_special_rear_wheels.stl", 1)
+    car_1=Car_info("testeo/wacky_races/army_surplus_special_chassis.stl", 
+             "testeo/wacky_races/army_surplus_special_front_wheels.stl", 
+             "testeo/wacky_races/army_surplus_special_rear_wheels.stl", 1)
     
-    # car_1.rear_wheels_material=rubber
-    # car_1.front_wheels_material=rubber
-    # car_1.chassis_material=emerald
-    # car_1.chassis_position=[-0.125,0.335,0]
-    # car_1.front_wheels_position=[0.55,-0.09,0]
-    # car_1.front_wheels_scale=[0.2,0.2,0.2]
-    # car_1.rear_wheels_position=[0,-0.03,0]
-    # car_1.rear_wheels_scale=[0.5,0.5,0.5]
+    car_1.rear_wheels_material=rubber
+    car_1.front_wheels_material=rubber
+    car_1.chassis_material=emerald
+    car_1.chassis_position=[-0.125,0.335,0]
+    car_1.front_wheels_position=[0.55,-0.09,0]
+    car_1.front_wheels_scale=[0.2,0.2,0.2]
+    car_1.rear_wheels_position=[0,-0.03,0]
+    car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
-    # Car3(car_1, platform, graph, pos=[-2,0,0])
+    Car3(car_1, platform, graph, pos=[-2,0,0])
 
+#Seteo turbo terrific listo
 
     car_2=Car_info("testeo/wacky_races/turbo_terrific_chassis.stl", 
              "testeo/wacky_races/turbo_terrific_front_wheels.stl", 
@@ -346,28 +359,47 @@ if __name__ == "__main__":
     car_2.front_wheels_material=rubber
     car_2.chassis_material=gold
     car_2.chassis_position=[-0.025,-0.045,0]
-    car_2.front_wheels_position=[-0.4,0,0]
-    car_2.rear_wheels_position=[-0.4,0,0]
+    car_2.front_wheels_position=[0.375,-0.105,0]
+    car_2.front_wheels_scale=[0.225,0.225,0.225]
+    car_2.rear_wheels_position=[-0.49,0.01,0]
+    car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
     Car3(car_2, platform, graph, pos=[6,0,0])
 
-    # car_3=Car_info("testeo/wacky_races/bulletproof_bomb_chassis.stl", 
-    #          "testeo/wacky_races/bulletproof_bomb_front_wheels.stl", 
-    #          "testeo/wacky_races/bulletproof_bomb_rear_wheels.stl", 3)
+#Seteo bulletproof bomb
+
+    car_3=Car_info("testeo/wacky_races/bulletproof_bomb_chassis.stl", 
+             "testeo/wacky_races/bulletproof_bomb_front_wheels.stl", 
+             "testeo/wacky_races/bulletproof_bomb_rear_wheels.stl", 3)
     
-    # car_3.rear_wheels_material=rubber
-    # car_3.front_wheels_material=rubber
-    # car_3.chassis_material=chrome
-    # car_3.chassis_position=[0,0.15,0]
-    # car_3.front_wheels_position=[0,-0.04,0]
-    # car_3.rear_wheels_position=[0,-0.04,0]
+    car_3.rear_wheels_material=rubber
+    car_3.front_wheels_material=rubber
+    car_3.chassis_material=chrome
+    car_3.chassis_position=[0,0.14,0]
+    car_3.front_wheels_position=[-0.642,0.0,0.087]
+    car_3.front_wheels_scale=[0.505,0.505,0.505]
+    car_3.rear_wheels_position=[0.527,0.004,-0.012]
+    car_3.rear_wheels_scale=[0.42,0.42,0.42]
     
-    # Car3(car_3, platform, graph ,pos=[-6,0,0])
+    Car3(car_3, platform, graph ,pos=[-6,0,0])
 
 
     graph.add_node("light",
                    pipeline=color_mesh_lit_pipeline,
                    position=[1, 1, 1],
+                   light=PointLight(
+                       diffuse = [1, 1, 1], # rojo
+                       specular = [0.8, 0.8, 0.8], # azul
+                       ambient = [0, 0.15, 0], # verde
+                       #constant = 1.0,
+                       #linear = 0.7,
+                       #quadratic = 1.8
+                       )
+                    )
+    
+    graph.add_node("light2",
+                   pipeline=color_mesh_lit_pipeline,
+                   position=[-6, 1, 2],
                    light=PointLight(
                        diffuse = [1, 1, 1], # rojo
                        specular = [0.8, 0.8, 0.8], # azul
@@ -387,7 +419,7 @@ if __name__ == "__main__":
                    rotation = [-np.pi/2, 0, 0],
                    scale = [16, 4, 1],
                    position = [0,-0.5,0],
-                   material = obsidian)
+                   material = silver)
     
     graph.add_node("wall",
                    attach_to="hangar",
@@ -396,7 +428,7 @@ if __name__ == "__main__":
                    rotation = [0, 0, 0],
                    scale = [16, 4, 0.25],
                    position = [0,1.5,-2],
-                   material = emerald)
+                   material = ruby)
     
     graph.add_node("right_wall",
                    attach_to="hangar",
@@ -432,16 +464,16 @@ if __name__ == "__main__":
     # ambient: Color ambiental del material
     # shininess: Exponente especular del material
 
-    posiciones = [[-2,1.5,2], [2,1.5,2], [6,1.5,2]]
-    k=2
+    posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
+    k=0
     def update(dt):
         global k
         global posiciones
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
 
-        # graph["car_"+str(k)]["rotation"][1] += 2*dt
-        # graph["platform_"+str(k)]["rotation"][1] += 2*dt
+        graph["car_"+str(k)]["rotation"][1] += 2*dt
+        graph["platform_"+str(k)]["rotation"][1] += 2*dt
 
         
         if controller.is_key_pressed(pyglet.window.key.A):
@@ -462,7 +494,7 @@ if __name__ == "__main__":
             camera.type = "orthographic"
         if controller.is_key_pressed(pyglet.window.key.O):
             k+=1
-            k=k%3
+            k=k%4
             camera.position = posiciones[k]
         camera.update()
 
