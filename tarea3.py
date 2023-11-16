@@ -26,8 +26,9 @@ class Controller(pyglet.window.Window):
         super().__init__(*args, **kargs)
         self.set_minimum_size(240, 240) # Evita error cuando se redimensiona a 0
         self.set_caption(title)
-        self.key_handler = pyglet.window.key.KeyStateHandler()
-        self.push_handlers(self.key_handler)
+        # self.key_handler = pyglet.window.key.KeyStateHandler()
+        # self.push_handlers(self.key_handler)
+        self.keys_state = {}
         self.program_state = { 
             "total_time": 0.0, 
             "camera": None,
@@ -45,8 +46,8 @@ class Controller(pyglet.window.Window):
         GL.glFrontFace(GL.GL_CCW)
 
     def is_key_pressed(self, key):
-        return self.key_handler[key]
-    
+        return self.keys_state.get(key, False)
+
     def on_key_press(self, symbol, modifiers):
         controller.keys_state[symbol] = True
         super().on_key_press(symbol, modifiers)
@@ -102,7 +103,7 @@ class Car():
                           outerCutOff = 0.82
                    )
             )
-        graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0])
+        graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0],rotation=[0, np.pi/2, 0])
 
         graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=car.chassis_mesh,
                        pipeline=color_mesh_lit_pipeline, scale=car.chassis_scale,material=car.chassis_material, 
@@ -240,7 +241,7 @@ if __name__ == "__main__":
     car_0.rear_wheels_position=[0.28,-0.1,0]
     car_0.rear_wheels_scale=[0.3,0.3,0.3]
 
-    Car(car_0, platform, graph, pos=[0,0,0], with_platform="False")
+    Car(car_0, platform, graph, pos=[0,0,0], with_platform=False)
 
 # Seteo army surplus special
 
@@ -258,7 +259,7 @@ if __name__ == "__main__":
     car_1.rear_wheels_position=[0,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
-    Car(car_1, platform, graph, pos=[-2,0,0], with_platform="False")
+    Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
 
 #Seteo turbo terrific
 
@@ -275,7 +276,7 @@ if __name__ == "__main__":
     car_2.rear_wheels_position=[-0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
-    Car(car_2, platform, graph, pos=[6,0,0], with_platform="False")
+    Car(car_2, platform, graph, pos=[6,0,0], with_platform=False)
 
 #Seteo bulletproof bomb
 
@@ -399,14 +400,14 @@ if __name__ == "__main__":
     car_0_body = world.CreateDynamicBody(position=(0, -5))
     car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    car_1_body = world.CreateDynamicBody(position=(-2, -2))
+    car_1_body = world.CreateDynamicBody(position=(-2,0))
     car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    car_2_body = world.CreateDynamicBody(position=(2, -2))
+    car_2_body = world.CreateDynamicBody(position=(-6,0))
     car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    car_3_body = world.CreateDynamicBody(position=(0, 5))
-    car_3_body.CreateCircleFixture(radius=0.5, density=100, friction=1)
+    car_3_body = world.CreateDynamicBody(position=(0,6))
+    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     controller.program_state["world"] = world
@@ -462,7 +463,6 @@ if __name__ == "__main__":
             car_0_body.ApplyForce((car_0_forward[0], car_0_forward[2]), car_0_body.worldCenter, True)
         if controller.is_key_pressed(pyglet.window.key.S):
             car_0_body.ApplyForce((-car_0_forward[0], -car_0_forward[2]), car_0_body.worldCenter, True)
-
         camera.position[0] = car_0_body.position[0] + 2 * np.sin(car_0_body.angle)
         camera.position[1] = 2
         camera.position[2] = car_0_body.position[1] - 2 * np.cos(car_0_body.angle)
@@ -533,6 +533,7 @@ if __name__ == "__main__":
     @controller.event
     def on_draw():
         controller.clear()
+        axis_scene.draw()
         graph.draw()
 
     pyglet.clock.schedule_interval(update, 1/60)
