@@ -20,6 +20,9 @@ from auxiliares.utils.helpers import init_axis, init_pipeline, mesh_from_file, g
 WIDTH = 720
 HEIGHT = 720
 
+#--------------------------------------------------------------------------------------
+# Controller
+#--------------------------------------------------------------------------------------
 class Controller(pyglet.window.Window):
     def __init__(self, title, *args, **kargs):
         super().__init__(*args, **kargs)
@@ -39,6 +42,10 @@ class Controller(pyglet.window.Window):
 
     def is_key_pressed(self, key):
         return self.key_handler[key]
+
+#--------------------------------------------------------------------------------------
+# Definición clases para la escena
+#--------------------------------------------------------------------------------------
 
 class Car_info():
     def __init__(self, chassis, front_wheels, rear_wheels, i=0):
@@ -97,10 +104,12 @@ class Car():
                 )
         
 
-        
-
     def draw(self):
         self.graph.draw()
+
+#--------------------------------------------------------------------------------------
+# Configuración Previa
+#--------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     # Instancia del controller
@@ -117,6 +126,10 @@ if __name__ == "__main__":
     cube = Model(shapes.Cube["position"], shapes.Cube["uv"], shapes.Cube["normal"], index_data=shapes.Cube["indices"])
 
     graph = SceneGraph(controller)
+
+#--------------------------------------------------------------------------------------
+# Materiales
+#--------------------------------------------------------------------------------------
 
 #http://devernay.free.fr/cours/opengl/materials.html
 
@@ -181,13 +194,24 @@ if __name__ == "__main__":
         ambient	= [0.1745, 0.01175, 0.01175],
         shininess = sh *0.6)
 
-    
+
+#--------------------------------------------------------------------------------------
+# Configuración de la geometría de la escena
+#--------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------
+# Plataforma
+#--------------------------------------------------------------------------------------
+
     platform = Platform_info("testeo/wacky_races/circular_platform.stl")
 
     platform.material=obsidian
     platform.position=[0,0,0]
     platform.scale=[2,2,2]
 
+#--------------------------------------------------------------------------------------
+# Autos
+#--------------------------------------------------------------------------------------
 
 #Seteo mean machine
 
@@ -258,6 +282,9 @@ if __name__ == "__main__":
     
     Car(car_3, platform, graph ,pos=[-6,0,0])
 
+#--------------------------------------------------------------------------------------
+# Hangar
+#--------------------------------------------------------------------------------------
 
     graph.add_node("light",
                    pipeline=color_mesh_lit_pipeline,
@@ -315,6 +342,10 @@ if __name__ == "__main__":
 
     posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
     k=0
+    print("Cambio auto:\n\tW: \n\t Q/E: Baja/Sube Cámara \n\t1/2: Vista perspectiva/ortográfica \n\tUP/DOWN/LEFT/RIGHT: Cámara Libre" )
+    
+    
+    
     def update(dt):
         global k
         global posiciones
