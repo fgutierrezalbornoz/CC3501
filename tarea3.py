@@ -259,7 +259,8 @@ if __name__ == "__main__":
     car_1.rear_wheels_position=[0,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
-    Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
+    # Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
+    Car(car_1, platform, graph, pos=[0,0,0], with_platform=False)
 
 #Seteo turbo terrific
 
@@ -276,7 +277,8 @@ if __name__ == "__main__":
     car_2.rear_wheels_position=[-0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
-    Car(car_2, platform, graph, pos=[6,0,0], with_platform=False)
+    Car(car_2, platform, graph, pos=[0,0,0], with_platform=False)
+    # Car(car_2, platform, graph, pos=[6,0,0], with_platform=False)
 
 #Seteo bulletproof bomb
 
@@ -293,7 +295,8 @@ if __name__ == "__main__":
     car_3.rear_wheels_position=[0.527,0.004,-0.012]
     car_3.rear_wheels_scale=[0.42,0.42,0.42]
     
-    Car(car_3, platform, graph ,pos=[-6,0,0], with_platform="False")
+    Car(car_3, platform, graph ,pos=[0,0,0], with_platform="False")
+    # Car(car_3, platform, graph ,pos=[-6,0,0], with_platform="False")
 
 #--------------------------------------------------------------------------------------
 # Hangar
@@ -365,7 +368,7 @@ if __name__ == "__main__":
                     pipeline = color_mesh_lit_pipeline,
                     position = [0, -1, 0],
                     rotation = [-np.pi/2, 0, 0],
-                    scale = [20, 20, 20],
+                    scale = [40, 40, 40],
                     material = Material(
                           diffuse = [1, 1, 1],
                           specular = [0.5, 0.5, 0.5],
@@ -380,34 +383,34 @@ if __name__ == "__main__":
     world = b2World(gravity=(0, 0))
 
     # Objetos estáticos
-    wall1_body = world.CreateStaticBody(position=(-10, 0))
-    wall1_body.CreatePolygonFixture(box=(0.5, 10), density=1, friction=1)
+    wall1_body = world.CreateStaticBody(position=(-20, 0))
+    wall1_body.CreatePolygonFixture(box=(0.5, 20), density=1, friction=1)
 
-    wall2_body = world.CreateStaticBody(position=(10, 0))
-    wall2_body.CreatePolygonFixture(box=(0.5, 10), density=1, friction=1)
+    wall2_body = world.CreateStaticBody(position=(20, 0))
+    wall2_body.CreatePolygonFixture(box=(0.5, 20), density=1, friction=1)
 
-    wall3_body = world.CreateStaticBody(position=(0, -10))
-    wall3_body.CreatePolygonFixture(box=(10, 0.5), density=1, friction=1)
+    wall3_body = world.CreateStaticBody(position=(0, -20))
+    wall3_body.CreatePolygonFixture(box=(20, 0.5), density=1, friction=1)
 
-    wall4_body = world.CreateStaticBody(position=(0, 10))
-    wall4_body.CreatePolygonFixture(box=(10, 0.5), density=1, friction=1)
+    wall4_body = world.CreateStaticBody(position=(0, 20))
+    wall4_body.CreatePolygonFixture(box=(20, 0.5), density=1, friction=1)
 
     winzone_body = world.CreateStaticBody(position=(0, 8))
     winzoneFixture = winzone_body.CreateCircleFixture(radius=1, density=1, friction=1)
     winzoneFixture.sensor = True # No interactúa con otros objetos en la simulación física, solo detecta colisiones
 
     # Objetos dinámicos
-    car_0_body = world.CreateDynamicBody(position=(0, -5))
-    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
+    car_0_body = world.CreateDynamicBody(position=(2, 0))
+    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
 
     car_1_body = world.CreateDynamicBody(position=(-2,0))
-    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
+    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=10, friction=1)
 
-    car_2_body = world.CreateDynamicBody(position=(-6,0))
-    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
+    car_2_body = world.CreateDynamicBody(position=(0,-2))
+    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
 
-    car_3_body = world.CreateDynamicBody(position=(0,6))
-    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
+    car_3_body = world.CreateDynamicBody(position=(0,2))
+    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     controller.program_state["world"] = world
