@@ -401,16 +401,16 @@ if __name__ == "__main__":
 
     # Objetos dinámicos
     car_0_body = world.CreateDynamicBody(position=(2, 0))
-    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
+    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=0.1)
 
     car_1_body = world.CreateDynamicBody(position=(-2,0))
-    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=10, friction=1)
+    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=10, friction=0.1)
 
     car_2_body = world.CreateDynamicBody(position=(0,-2))
-    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
+    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=10)
 
     car_3_body = world.CreateDynamicBody(position=(0,2))
-    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=1)
+    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=0.1)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     controller.program_state["world"] = world
@@ -429,7 +429,11 @@ if __name__ == "__main__":
         )
         world.ClearForces()
 
+    car_control_body = car_0_body
+    k=0
     def update(dt):
+        global car_control_body
+        global k
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
 
@@ -449,6 +453,19 @@ if __name__ == "__main__":
         car_3_body = controller.program_state["bodies"]["car_3"]
         graph["car_system_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle)
 
+
+        if controller.is_key_pressed(pyglet.window.key._0):
+            k=0
+            car_control_body = car_0_body
+        if controller.is_key_pressed(pyglet.window.key._1):
+            k=1
+            car_control_body = car_1_body
+        if controller.is_key_pressed(pyglet.window.key._2):
+            k=2
+            car_control_body = car_2_body
+        if controller.is_key_pressed(pyglet.window.key._3):
+            k=3
+            car_control_body = car_3_body
         # Check condición de victoria, car_0 en winzone
         winzone_body = controller.program_state["bodies"]["winzone"]
         if winzone_body.fixtures[0].TestPoint(car_0_body.position):
@@ -456,20 +473,22 @@ if __name__ == "__main__":
             pyglet.app.exit()
         
 
-        # Modificar la fuerza y el torque del car_0 con las teclas
-        car_0_forward = np.array([np.sin(-car_0_body.angle), 0, np.cos(-car_0_body.angle)])
+        # Modificar la fuerza y el torque del car con las teclas
+
+        
+        car_control_forward = np.array([np.sin(-car_control_body.angle), 0, np.cos(-car_control_body.angle)])
         if controller.is_key_pressed(pyglet.window.key.A):
-            car_0_body.ApplyTorque(-0.5, True)
+            car_control_body.ApplyTorque(-0.5, True)
         if controller.is_key_pressed(pyglet.window.key.D):
-            car_0_body.ApplyTorque(0.5, True)
+            car_control_body.ApplyTorque(0.5, True)
         if controller.is_key_pressed(pyglet.window.key.W):
-            car_0_body.ApplyForce((car_0_forward[0], car_0_forward[2]), car_0_body.worldCenter, True)
+            car_control_body.ApplyForce((car_control_forward[0], car_control_forward[2]), car_control_body.worldCenter, True)
         if controller.is_key_pressed(pyglet.window.key.S):
-            car_0_body.ApplyForce((-car_0_forward[0], -car_0_forward[2]), car_0_body.worldCenter, True)
-        camera.position[0] = car_0_body.position[0] + 2 * np.sin(car_0_body.angle)
+            car_control_body.ApplyForce((-car_control_forward[0], -car_control_forward[2]), car_control_body.worldCenter, True)
+        camera.position[0] = car_control_body.position[0] + 2 * np.sin(car_control_body.angle)
         camera.position[1] = 2
-        camera.position[2] = car_0_body.position[1] - 2 * np.cos(car_0_body.angle)
-        camera.yaw = car_0_body.angle + np.pi / 2
+        camera.position[2] = car_control_body.position[1] - 2 * np.cos(car_control_body.angle)
+        camera.yaw = car_control_body.angle + np.pi / 2
         camera.update()
         update_world(dt)
 
@@ -512,13 +531,13 @@ if __name__ == "__main__":
     #     camera.update()
     @controller.event
     def on_key_press(symbol, modifiers):
-        car_0_body = controller.program_state["bodies"]["car_0"]
-        # Reset car_0
+        car_control_body = controller.program_state["bodies"]["car_"+str(k)]
+        # Reset car_control
         if symbol == pyglet.window.key.SPACE:
-            car_0_body.position = (0, -5)
-            car_0_body.angle = 0
-            car_0_body.linearVelocity = (0, 0)
-            car_0_body.angularVelocity = 0
+            car_control_body.position = (0, -5)
+            car_control_body.angle = 0
+            car_control_body.linearVelocity = (0, 0)
+            car_control_body.angularVelocity = 0
     @controller.event
     def on_resize(width, height):
         controller.program_state["camera"].resize(width, height)
