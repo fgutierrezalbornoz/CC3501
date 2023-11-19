@@ -2,7 +2,9 @@ import pyglet
 from OpenGL import GL
 import numpy as np
 import sys
-
+if sys.path[0] != "":
+    sys.path.insert(0, "")
+sys.path.append('../../')
 import auxiliares.utils.shapes as shapes
 from auxiliares.utils.camera import FreeCamera
 from auxiliares.utils.scene_graph import SceneGraph
@@ -195,7 +197,7 @@ if __name__ == "__main__":
 # Plataforma
 #--------------------------------------------------------------------------------------
 
-    platform = Platform_info("circular_platform.stl")
+    platform = Platform_info("tareas\Tarea 2 entregada\circular_platform.stl")
 
     platform.material=obsidian
     platform.position=[0,0,0]
@@ -207,9 +209,9 @@ if __name__ == "__main__":
 
 #Seteo mean machine
 
-    car_0=Car_info("mean_machine_chassis.stl", 
-             "mean_machine_front_wheels.stl", 
-             "mean_machine_rear_wheels.stl", 0)
+    car_0=Car_info("tareas\Tarea 2 entregada\mean_machine_chassis.stl", 
+             "tareas\Tarea 2 entregada\mean_machine_front_wheels.stl", 
+             "tareas\Tarea 2 entregada\mean_machine_rear_wheels.stl", 0)
     
     car_0.rear_wheels_material=rubber
     car_0.front_wheels_material=rubber
@@ -225,43 +227,43 @@ if __name__ == "__main__":
 # Seteo army surplus special
 
 
-    car_1=Car_info("army_surplus_special_chassis.stl", 
-             "army_surplus_special_front_wheels.stl", 
-             "army_surplus_special_rear_wheels.stl", 1)
+    car_1=Car_info("tareas\Tarea 2 entregada/army_surplus_special_chassis.stl", 
+             "tareas\Tarea 2 entregada/army_surplus_special_front_wheels.stl", 
+             "tareas\Tarea 2 entregada/army_surplus_special_rear_wheels.stl", 1)
     
     car_1.rear_wheels_material=rubber
     car_1.front_wheels_material=rubber
     car_1.chassis_material=emerald
     car_1.chassis_position=[-0.125,0.335,0]
-    car_1.front_wheels_position=[0.55,-0.09,0]
+    car_1.front_wheels_position=[-0.798,-0.09,0]
     car_1.front_wheels_scale=[0.2,0.2,0.2]
-    car_1.rear_wheels_position=[0,-0.03,0]
+    car_1.rear_wheels_position=[-0.2,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
     Car(car_1, platform, graph, pos=[-2,0,0])
 
 #Seteo turbo terrific
 
-    car_2=Car_info("turbo_terrific_chassis.stl", 
-             "turbo_terrific_front_wheels.stl", 
-             "turbo_terrific_rear_wheels.stl", 2)
+    car_2=Car_info("tareas\Tarea 2 entregada/turbo_terrific_chassis.stl", 
+             "tareas\Tarea 2 entregada/turbo_terrific_front_wheels.stl", 
+             "tareas\Tarea 2 entregada/turbo_terrific_rear_wheels.stl", 2)
     
     car_2.rear_wheels_material=rubber
     car_2.front_wheels_material=rubber
     car_2.chassis_material=ruby
-    car_2.chassis_position=[-0.025,-0.045,0]
-    car_2.front_wheels_position=[0.375,-0.105,0]
+    car_2.chassis_position=[0.025,-0.045,0]
+    car_2.front_wheels_position=[-0.375,-0.105,0]
     car_2.front_wheels_scale=[0.225,0.225,0.225]
-    car_2.rear_wheels_position=[-0.49,0.01,0]
+    car_2.rear_wheels_position=[0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
     Car(car_2, platform, graph, pos=[6,0,0])
 
 #Seteo bulletproof bomb
 
-    car_3=Car_info("bulletproof_bomb_chassis.stl", 
-             "bulletproof_bomb_front_wheels.stl", 
-             "bulletproof_bomb_rear_wheels.stl", 3)
+    car_3=Car_info("tareas\Tarea 2 entregada/bulletproof_bomb_chassis.stl", 
+             "tareas\Tarea 2 entregada/bulletproof_bomb_front_wheels.stl", 
+             "tareas\Tarea 2 entregada/bulletproof_bomb_rear_wheels.stl", 3)
     
     car_3.rear_wheels_material=rubber
     car_3.front_wheels_material=rubber
