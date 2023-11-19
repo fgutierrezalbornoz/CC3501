@@ -254,9 +254,9 @@ if __name__ == "__main__":
     car_1.front_wheels_material=rubber
     car_1.chassis_material=emerald
     car_1.chassis_position=[-0.125,0.335,0]
-    car_1.front_wheels_position=[0.55,-0.09,0]
+    car_1.front_wheels_position=[-0.798,-0.09,0]
     car_1.front_wheels_scale=[0.2,0.2,0.2]
-    car_1.rear_wheels_position=[0,-0.03,0]
+    car_1.rear_wheels_position=[-0.2,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
 
     # Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
@@ -271,10 +271,10 @@ if __name__ == "__main__":
     car_2.rear_wheels_material=rubber
     car_2.front_wheels_material=rubber
     car_2.chassis_material=ruby
-    car_2.chassis_position=[-0.025,-0.045,0]
-    car_2.front_wheels_position=[0.375,-0.105,0]
+    car_2.chassis_position=[0.025,-0.045,0]
+    car_2.front_wheels_position=[-0.375,-0.105,0]
     car_2.front_wheels_scale=[0.225,0.225,0.225]
-    car_2.rear_wheels_position=[-0.49,0.01,0]
+    car_2.rear_wheels_position=[0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
     Car(car_2, platform, graph, pos=[0,0,0], with_platform=False)
@@ -400,17 +400,17 @@ if __name__ == "__main__":
     winzoneFixture.sensor = True # No interactúa con otros objetos en la simulación física, solo detecta colisiones
 
     # Objetos dinámicos
-    car_0_body = world.CreateDynamicBody(position=(2, 0))
-    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=0.1)
+    car_0_body = world.CreateDynamicBody(position=(2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
+    car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    car_1_body = world.CreateDynamicBody(position=(-2,0))
-    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=10, friction=0.1)
+    car_1_body = world.CreateDynamicBody(position=(-2,0), angle=0, linearDamping=0.75, angularDamping=0.5)
+    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=4, friction=1)
 
-    car_2_body = world.CreateDynamicBody(position=(0,-2))
-    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=10)
+    car_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    car_2_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    car_3_body = world.CreateDynamicBody(position=(0,2))
-    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=5, friction=0.1)
+    car_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     controller.program_state["world"] = world
