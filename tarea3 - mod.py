@@ -145,7 +145,7 @@ if __name__ == "__main__":
     # Instancia del controller
     controller = Controller("Tarea 3", width=WIDTH, height=HEIGHT, resizable=True)
 
-    controller.program_state["camera"] = FreeCamera([-6, 1.5, 2], "perspective")
+    controller.program_state["camera"] = FreeCamera([2, 1.5, 2], "perspective")
     controller.program_state["camera"].yaw = -np.pi / 2#-3* np.pi/ 4
     controller.program_state["camera"].pitch = -np.pi / 4
 
@@ -280,7 +280,10 @@ if __name__ == "__main__":
 
     # Car(car_1, platform, graph, pos=[-2,0,0])
     # Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
-    Car(car_1, platform, graph, pos=[0,0,0], with_platform=False)
+    
+    
+    
+    # Car(car_1, platform, graph, pos=[0,0,0], with_platform=False)
 
 #Seteo turbo terrific
 
@@ -297,7 +300,9 @@ if __name__ == "__main__":
     car_2.rear_wheels_position=[0.462,0.052,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
-    Car(car_2, platform, graph, pos=[0,0,0], with_platform=False)
+    # Car(car_2, platform, graph, pos=[0,0,0], with_platform=False)
+
+
     # Car(car_2, platform, graph, pos=[6,0,0], with_platform=False)
     #Car(car_2, platform, graph, pos=[6,0,0])
 
@@ -321,7 +326,9 @@ if __name__ == "__main__":
     car_3.spare_wheels_scale=[0.615,0.615,0.615]
     
     
-    Car(car_3, platform, graph ,pos=[0,0,0], with_platform=False)
+    # Car(car_3, platform, graph ,pos=[0,0,0], with_platform=False)
+
+
     # Car(car_3, platform, graph ,pos=[-6,0,0], with_platform=False)
     #Car(car_3, platform, graph ,pos=[-6,0,0])
 
@@ -427,54 +434,61 @@ if __name__ == "__main__":
     car_0_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
     front_wheels_0_body = world.CreateDynamicBody(position=(2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
-    front_wheels_0_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
-
+    # front_wheels_0_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    front_wheels_0_body.CreateCircleFixture(radius=1, density=1, friction=0.3)
     rear_wheels_0_body = world.CreateDynamicBody(position=(2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
-    rear_wheels_0_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # rear_wheels_0_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    rear_wheels_0_body.CreateCircleFixture(radius=0.01, density=1, friction=1)
 
-    car_1_body = world.CreateDynamicBody(position=(-2,0), angle=0, linearDamping=0.75, angularDamping=0.5)
-    car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=4, friction=1)
+    world.CreateWheelJoint(bodyA=car_0_body, bodyB=front_wheels_0_body, localAnchorB=(0,0), anchor=(0, 0), collideConnected=False)
+    #world.CreateRevoluteJoint(bodyA=car_0_body, bodyB=rear_wheels_0_body, anchor=(0, 0), collideConnected=False)
 
-    front_wheels_1_body = world.CreateDynamicBody(position=(-2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
-    front_wheels_1_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # DEscomentar -------------------------------
+    # car_1_body = world.CreateDynamicBody(position=(-2,0), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # car_1_body.CreatePolygonFixture(box=(0.5, 0.5), density=4, friction=1)
 
-    rear_wheels_1_body = world.CreateDynamicBody(position=(-2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
-    rear_wheels_1_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # front_wheels_1_body = world.CreateDynamicBody(position=(-2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # front_wheels_1_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
 
-    car_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    car_2_body.CreatePolygonFixture(box=(0.5, 0.8), density=1, friction=1)
+    # rear_wheels_1_body = world.CreateDynamicBody(position=(-2, 0), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # rear_wheels_1_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
 
-    front_wheels_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    front_wheels_2_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # car_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # car_2_body.CreatePolygonFixture(box=(0.5, 0.8), density=1, friction=1)
 
-    rear_wheels_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    rear_wheels_2_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # front_wheels_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # front_wheels_2_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+
+    # rear_wheels_2_body = world.CreateDynamicBody(position=(0,-2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # rear_wheels_2_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
 
 
-    car_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
+    # car_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # car_3_body.CreatePolygonFixture(box=(0.5, 0.5), density=1, friction=1)
 
-    front_wheels_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    front_wheels_3_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # front_wheels_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # front_wheels_3_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
 
-    rear_wheels_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
-    rear_wheels_3_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
+    # rear_wheels_3_body = world.CreateDynamicBody(position=(0,2), angle=0, linearDamping=0.75, angularDamping=0.5)
+    # rear_wheels_3_body.CreatePolygonFixture(box=(0.01, 0.01), density=1, friction=1)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     controller.program_state["world"] = world
     controller.program_state["bodies"]["car_0"] = car_0_body
-    controller.program_state["bodies"]["car_1"] = car_1_body
-    controller.program_state["bodies"]["car_2"] = car_2_body
-    controller.program_state["bodies"]["car_3"] = car_3_body
+    # Descomentar ------------------------------
+    # controller.program_state["bodies"]["car_1"] = car_1_body
+    # controller.program_state["bodies"]["car_2"] = car_2_body
+    # controller.program_state["bodies"]["car_3"] = car_3_body
 
     controller.program_state["bodies"]["front_wheels_0"] = front_wheels_0_body
     controller.program_state["bodies"]["rear_wheels_0"] = rear_wheels_0_body
-    controller.program_state["bodies"]["front_wheels_1"] = front_wheels_1_body
-    controller.program_state["bodies"]["rear_wheels_1"] = rear_wheels_1_body
-    controller.program_state["bodies"]["front_wheels_2"] = front_wheels_2_body
-    controller.program_state["bodies"]["rear_wheels_2"] = rear_wheels_2_body
-    controller.program_state["bodies"]["front_wheels_3"] = front_wheels_3_body
-    controller.program_state["bodies"]["rear_wheels_3"] = rear_wheels_3_body
+    # DEscomentar ---------------------------
+    # controller.program_state["bodies"]["front_wheels_1"] = front_wheels_1_body
+    # controller.program_state["bodies"]["rear_wheels_1"] = rear_wheels_1_body
+    # controller.program_state["bodies"]["front_wheels_2"] = front_wheels_2_body
+    # controller.program_state["bodies"]["rear_wheels_2"] = rear_wheels_2_body
+    # controller.program_state["bodies"]["front_wheels_3"] = front_wheels_3_body
+    # controller.program_state["bodies"]["rear_wheels_3"] = rear_wheels_3_body
 
 
     #######################################
@@ -487,8 +501,13 @@ if __name__ == "__main__":
         world.ClearForces()
 
     car_control_body = car_0_body
+    front_wheels_control_body = front_wheels_0_body
+    rear_wheels_control_body = rear_wheels_0_body
     k=0
     def update(dt):
+        global car_control_body
+        global front_wheels_control_body
+        global rear_wheels_control_body
         global car_control_body
         global k
         controller.program_state["total_time"] += dt
@@ -498,49 +517,56 @@ if __name__ == "__main__":
         car_0_body = controller.program_state["bodies"]["car_0"]
         front_wheels_0_body = controller.program_state["bodies"]["front_wheels_0"]
         rear_wheels_0_body = controller.program_state["bodies"]["rear_wheels_0"]
+        if graph["front_wheels_"+str(k)]["rotation"][2]!= front_wheels_0_body.angle:
+            graph["front_wheels_"+str(k)]["rotation"][2] += front_wheels_0_body.angle
         graph["chassis_0"]["transform"] = tr.translate(car_0_body.position[0], 0, car_0_body.position[1]) @ tr.rotationY(-car_0_body.angle+np.pi/2)
         graph["front_wheels_0"]["transform"] = tr.translate(car_0_body.position[0], 0, car_0_body.position[1]) @ tr.rotationY(-car_0_body.angle+np.pi/2)
+        # graph["front_wheels_0"]["rotation"][2] += -front_wheels_0_body.angle # gira bien
+        # graph["front_wheels_0"]["rotation"][2] += -front_wheels_0_body.angle
         graph["rear_wheels_0"]["transform"] = tr.translate(car_0_body.position[0], 0, car_0_body.position[1]) @ tr.rotationY(-car_0_body.angle+np.pi/2)
+        # graph["front_wheels_0"]["transform"] = tr.rotationY(-np.pi/2) @ tr.rotationZ(-front_wheels_0_body.angle) @ tr.rotationY(np.pi/2)
+        # graph["rear_wheels_0"]["transform"] = tr.rotationY(-np.pi/2) @ tr.rotationZ(-front_wheels_0_body.angle) @ tr.rotationY(-np.pi/2)
         
-        # Actualización física del car 1
-        car_1_body = controller.program_state["bodies"]["car_1"]
-        front_wheels_1_body = controller.program_state["bodies"]["front_wheels_1"]
-        rear_wheels_1_body = controller.program_state["bodies"]["rear_wheels_1"]
-        graph["chassis_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
-        graph["front_wheels_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
-        graph["rear_wheels_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
-        
-
-        # Actualización física del car 2
-        car_2_body = controller.program_state["bodies"]["car_2"]
-        front_wheels_2_body = controller.program_state["bodies"]["front_wheels_2"]
-        rear_wheels_2_body = controller.program_state["bodies"]["rear_wheels_2"]
-        graph["chassis_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
-        graph["front_wheels_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
-        graph["rear_wheels_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
+        # --------- Descomentar
+        # # Actualización física del car 1
+        # car_1_body = controller.program_state["bodies"]["car_1"]
+        # front_wheels_1_body = controller.program_state["bodies"]["front_wheels_1"]
+        # rear_wheels_1_body = controller.program_state["bodies"]["rear_wheels_1"]
+        # graph["chassis_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
+        # graph["front_wheels_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
+        # graph["rear_wheels_1"]["transform"] = tr.translate(car_1_body.position[0], 0, car_1_body.position[1]) @ tr.rotationY(-car_1_body.angle+np.pi/2)
         
 
-        # Actualización física del car 3
-        car_3_body = controller.program_state["bodies"]["car_3"]
-        front_wheels_3_body = controller.program_state["bodies"]["front_wheels_3"]
-        rear_wheels_3_body = controller.program_state["bodies"]["rear_wheels_3"]
-        graph["chassis_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
-        graph["front_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
-        graph["rear_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
-        graph["spare_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
+        # # Actualización física del car 2
+        # car_2_body = controller.program_state["bodies"]["car_2"]
+        # front_wheels_2_body = controller.program_state["bodies"]["front_wheels_2"]
+        # rear_wheels_2_body = controller.program_state["bodies"]["rear_wheels_2"]
+        # graph["chassis_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
+        # graph["front_wheels_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
+        # graph["rear_wheels_2"]["transform"] = tr.translate(car_2_body.position[0], 0, car_2_body.position[1]) @ tr.rotationY(-car_2_body.angle+np.pi/2)
+        
 
-        if controller.is_key_pressed(pyglet.window.key._0):
-            k=0
-            car_control_body = car_0_body
-        if controller.is_key_pressed(pyglet.window.key._1):
-            k=1
-            car_control_body = car_1_body
-        if controller.is_key_pressed(pyglet.window.key._2):
-            k=2
-            car_control_body = car_2_body
-        if controller.is_key_pressed(pyglet.window.key._3):
-            k=3
-            car_control_body = car_3_body
+        # # Actualización física del car 3
+        # car_3_body = controller.program_state["bodies"]["car_3"]
+        # front_wheels_3_body = controller.program_state["bodies"]["front_wheels_3"]
+        # rear_wheels_3_body = controller.program_state["bodies"]["rear_wheels_3"]
+        # graph["chassis_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
+        # graph["front_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
+        # graph["rear_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
+        # graph["spare_wheels_3"]["transform"] = tr.translate(car_3_body.position[0], 0, car_3_body.position[1]) @ tr.rotationY(-car_3_body.angle+np.pi/2)
+
+        # if controller.is_key_pressed(pyglet.window.key._0):
+        #     k=0
+        #     car_control_body = car_0_body
+        # if controller.is_key_pressed(pyglet.window.key._1):
+        #     k=1
+        #     car_control_body = car_1_body
+        # if controller.is_key_pressed(pyglet.window.key._2):
+        #     k=2
+        #     car_control_body = car_2_body
+        # if controller.is_key_pressed(pyglet.window.key._3):
+        #     k=3
+        #     car_control_body = car_3_body
         
 
         # Modificar la fuerza y el torque del car con las teclas
@@ -552,13 +578,24 @@ if __name__ == "__main__":
         if controller.is_key_pressed(pyglet.window.key.D):
             car_control_body.ApplyTorque(0.5, True)
         if controller.is_key_pressed(pyglet.window.key.W):
-            car_control_body.ApplyForce((car_control_forward[0], car_control_forward[2]), car_control_body.worldCenter, True)
+            #radius=0.01
+            front_wheels_control_body.ApplyTorque(10, True)
+            
+            #car_control_body.ApplyForce((car_control_forward[0], car_control_forward[2]), car_control_body.worldCenter, True)
         if controller.is_key_pressed(pyglet.window.key.S):
             car_control_body.ApplyForce((-car_control_forward[0], -car_control_forward[2]), car_control_body.worldCenter, True)
         camera.position[0] = car_control_body.position[0] + 2 * np.sin(car_control_body.angle)
         camera.position[1] = 2
         camera.position[2] = car_control_body.position[1] - 2 * np.cos(car_control_body.angle)
         camera.yaw = car_control_body.angle + np.pi / 2
+        # if controller.is_key_pressed(pyglet.window.key.LEFT):
+        #     camera.position -= camera.right * dt
+        # if controller.is_key_pressed(pyglet.window.key.RIGHT):
+        #     camera.position += camera.right * dt
+        # if controller.is_key_pressed(pyglet.window.key.UP):
+        #     camera.position += camera.forward * dt
+        # if controller.is_key_pressed(pyglet.window.key.DOWN):
+        #     camera.position -= camera.forward * dt
         camera.update()
         update_world(dt)
 
