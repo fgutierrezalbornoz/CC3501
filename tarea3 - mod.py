@@ -91,30 +91,10 @@ class Platform_info():
         self.material = None
         
 class Car():
-    def __init__(self, car, platform, graph, pos=[0,0,0],with_platform=True):
+    def __init__(self, car, platform, graph, pos=[0,0,0]):
         i=car.car_number
-        graph.add_node("car_system_"+str(i),position=pos)
-        if with_platform:
-            graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform.mesh, 
-                        pipeline=color_mesh_lit_pipeline, material=platform.material, 
-                        scale=platform.scale)
-            graph.add_node("spotlight_"+str(i),
-                       attach_to="platform_"+str(i),
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[0, 0.8, 0],
-                   rotation=[-np.pi/2, 0, 0],
-                   light=SpotLight(
-                          diffuse = [1, 1, 1],
-                          specular = [1, 1, 1],
-                          ambient = [0.15, 0.15, 0.15],
-                          cutOff = 0.91, # siempre mayor a outerCutOff
-                          outerCutOff = 0.82
-                   )
-            )
-        # car.chassis_position=[car.chassis_position[0]+pos[0], car.chassis_position[1]+pos[1], car.chassis_position[2]+pos[2]]
         car.chassis_position=[car.chassis_position[0]+pos[0], car.chassis_position[1]+pos[1]+0.24, car.chassis_position[2]+pos[2]]
         car.front_wheels_position=[car.chassis_position[0]+car.front_wheels_position[0], car.chassis_position[1]+car.front_wheels_position[1], car.chassis_position[2]+car.front_wheels_position[2]]
-        #car.front_wheels_position=[car.front_wheels_position[0], car.front_wheels_position[1], car.front_wheels_position[2]]
         car.rear_wheels_position=[car.chassis_position[0]+car.rear_wheels_position[0], car.chassis_position[1]+car.rear_wheels_position[1], car.chassis_position[2]+car.rear_wheels_position[2]]
         rotation=[0,0,0]
         graph.add_node("chassis_"+str(i),mesh=car.chassis_mesh,
@@ -136,6 +116,42 @@ class Car():
 
     def draw(self):
         self.graph.draw()
+
+class CarChoosing():
+    def __init__(self, car, platform, graph, pos=[0,0,0]):
+        i=car.car_number
+        graph.add_node("car_system_"+str(i),position=pos)
+        graph.add_node("platform_"+str(i), attach_to="car_system_"+str(i),mesh=platform.mesh, 
+                       pipeline=color_mesh_lit_pipeline, material=platform.material, 
+                       scale=platform.scale)
+        graph.add_node("car_"+str(i), attach_to="car_system_"+str(i),position=[0,0.24,0])
+
+        graph.add_node("chassis_"+str(i), attach_to="car_"+str(i),mesh=car.chassis_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.chassis_scale,material=car.chassis_material, 
+                       position = car.chassis_position)
+        graph.add_node("front_wheel_"+str(i), attach_to="car_"+str(i), mesh=car.front_wheels_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.front_wheels_scale, material=car.front_wheels_material, position = car.front_wheels_position)
+        
+        graph.add_node("rear_wheel_"+str(i), attach_to="car_"+str(i), mesh=car.rear_wheels_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.rear_wheels_scale, material=car.rear_wheels_material, position = car.rear_wheels_position)
+
+        if car.spare_wheels_mesh is not None:
+            graph.add_node("spare_wheels_"+str(i), attach_to="car_"+str(i),mesh=car.spare_wheels_mesh,
+                       pipeline=color_mesh_lit_pipeline, scale=car.spare_wheels_scale, material=car.spare_wheels_material, 
+                       position = car.spare_wheels_position)
+        graph.add_node("spotlight_"+str(i),
+                       attach_to="platform_"+str(i),
+                   pipeline=color_mesh_lit_pipeline,
+                   position=[0, 0.8, 0],
+                   rotation=[-np.pi/2, 0, 0],
+                   light=SpotLight(
+                          diffuse = [1, 1, 1],
+                          specular = [1, 1, 1],
+                          ambient = [0.15, 0.15, 0.15],
+                          cutOff = 0.91, # siempre mayor a outerCutOff
+                          outerCutOff = 0.82
+                   )
+                )
 
 def worldCarBody(positionIn, boxIn, densityIn, radiusIn, i=0):
     car_body = world.CreateDynamicBody(position=positionIn, angle=0, linearDamping=0.75, angularDamping=0.75)
@@ -161,6 +177,64 @@ def carUpdate(car_body, front_wheels_body, rear_wheels_body, graph, i):
     if i==3:
         graph["spare_wheels_"+str(i)]["transform"] = tr.translate(car_body.position[0], 0, car_body.position[1]) @ tr.rotationY(-car_body.angle+np.pi/2)
 
+def switch_scene(j):
+    global car_control_body
+    global front_wheels_control_body
+    global rear_wheels_control_body
+    
+    for i in [0,1,2,3]:
+        graph.num_spot_lights-=1
+        graph.remove_node("car_system_"+str(i))
+    graph.remove_node("hangar")
+    car_0.chassis_position=[0.2,0.09,0]
+    car_0.front_wheels_position=[-0.635,-0.19,0]
+    car_0.front_wheels_scale=[0.2,0.2,0.2]
+    car_0.rear_wheels_position=[0.075,-0.19,0]
+    car_0.rear_wheels_scale=[0.3,0.3,0.3]
+    car_1.chassis_position=[-0.125,0.335,0]
+    car_1.front_wheels_position=[-0.673,-0.423,0]
+    car_1.front_wheels_scale=[0.2,0.2,0.2]
+    car_1.rear_wheels_position=[-0.08,-0.37,0]
+    car_1.rear_wheels_scale=[0.5,0.5,0.5]
+    car_2.chassis_position=[0.025,-0.045,0]
+    car_2.front_wheels_position=[-0.4,-0.062,0]
+    car_2.front_wheels_scale=[0.225,0.225,0.225]
+    car_2.rear_wheels_position=[0.462,0.052,0]
+    car_2.rear_wheels_scale=[0.42,0.42,0.42]
+    car_3.chassis_position=[0,0.14,0]
+    car_3.front_wheels_position=[-0.78,-0.188,0.008]
+    car_3.front_wheels_scale=[0.36,0.36,0.36]
+    car_3.rear_wheels_position=[0.47,-0.188,-0.016]
+    car_3.rear_wheels_scale=[0.38,0.38,0.38]
+    car_3.spare_wheels_position=[0.159,-0.037,0.115]
+    car_3.spare_wheels_scale=[0.615,0.615,0.615]
+    Car(car_0, platform, graph, pos=[0,0,0])
+    Car(car_1, platform, graph, pos=[0,0,0])
+    Car(car_2, platform, graph, pos=[0,0,0])
+    Car(car_3, platform, graph, pos=[0,0,0])
+    if j==0:
+        car_control_body = car_0_body
+        front_wheels_control_body = front_wheels_0_body
+        rear_wheels_control_body = rear_wheels_0_body
+    elif j==1:
+        car_control_body = car_1_body
+        front_wheels_control_body = front_wheels_1_body
+        rear_wheels_control_body = rear_wheels_1_body
+    elif j==2:
+        car_control_body = car_2_body
+        front_wheels_control_body = front_wheels_2_body
+        rear_wheels_control_body = rear_wheels_2_body
+    elif j==3:
+        car_control_body = car_3_body
+        front_wheels_control_body = front_wheels_3_body
+        rear_wheels_control_body = rear_wheels_3_body
+    graph.add_node("sun",
+                pipeline=color_mesh_lit_pipeline,
+                position=[0, 2, 0],
+                rotation=[-np.pi/4, 0, 0],
+                light=DirectionalLight(diffuse = [1, 1, 1], specular = [0.25, 0.25, 0.25], ambient = [0.15, 0.15, 0.15]))
+    print("\tEn pista \n\tW/A/S/D: Manejo del auto \n\tQ/E/R: Vistas Laterales y hacia atrás \n\tFreno: Espacio \n\t0/1/2/3:Conducción de otro auto \n\tShift: Turbo" )    
+    
 
 #--------------------------------------------------------------------------------------
 # Configuración Previa
@@ -183,7 +257,6 @@ if __name__ == "__main__":
     cube = Model(shapes.Cube["position"], shapes.Cube["uv"], shapes.Cube["normal"], index_data=shapes.Cube["indices"])
     quad = Model(shapes.Square["position"], shapes.Square["uv"], shapes.Square["normal"], index_data=shapes.Square["indices"])
     graph = SceneGraph(controller)
-    graph2 = SceneGraph(controller)
 
 #--------------------------------------------------------------------------------------
 # Materiales
@@ -280,14 +353,13 @@ if __name__ == "__main__":
     car_0.rear_wheels_material=rubber
     car_0.front_wheels_material=rubber
     car_0.chassis_material=material
-    car_0.chassis_position=[0.2,0.09,0]
-    car_0.front_wheels_position=[-0.635,-0.19,0]
+    car_0.chassis_position=[0.2,0.1,0]
+    car_0.front_wheels_position=[-0.435,-0.1,0]
     car_0.front_wheels_scale=[0.2,0.2,0.2]
-    car_0.rear_wheels_position=[0.075,-0.19,0]
+    car_0.rear_wheels_position=[0.28,-0.1,0]
     car_0.rear_wheels_scale=[0.3,0.3,0.3]
 
-    # Car(car_0, platform, graph, pos=[0,0,0], with_platform=False)
-    Car(car_0, platform, graph2, pos=[2,0,0], with_platform=True)
+    CarChoosing(car_0, platform, graph, pos=[2,0,0])
 
 # Seteo army surplus special
 
@@ -300,18 +372,12 @@ if __name__ == "__main__":
     car_1.front_wheels_material=rubber
     car_1.chassis_material=emerald
     car_1.chassis_position=[-0.125,0.335,0]
-    car_1.front_wheels_position=[-0.673,-0.423,0]
+    car_1.front_wheels_position=[-0.798,-0.09,0]
     car_1.front_wheels_scale=[0.2,0.2,0.2]
-    car_1.rear_wheels_position=[-0.08,-0.37,0]
+    car_1.rear_wheels_position=[-0.2,-0.03,0]
     car_1.rear_wheels_scale=[0.5,0.5,0.5]
-
     
-    # Car(car_1, platform, graph, pos=[-2,0,0], with_platform=False)
-    
-    
-    
-    # Car(car_1, platform, graph, pos=[0,0,0], with_platform=False)
-    Car(car_1, platform, graph2, pos=[-2,0,0])
+    CarChoosing(car_1, platform, graph, pos=[-2,0,0])
 
 #Seteo turbo terrific
 
@@ -323,17 +389,13 @@ if __name__ == "__main__":
     car_2.front_wheels_material=rubber
     car_2.chassis_material=ruby
     car_2.chassis_position=[0.025,-0.045,0]
-    car_2.front_wheels_position=[-0.4,-0.062,0]
+    car_2.front_wheels_position=[-0.375,-0.105,0]
     car_2.front_wheels_scale=[0.225,0.225,0.225]
-    car_2.rear_wheels_position=[0.462,0.052,0]
+    car_2.rear_wheels_position=[0.49,0.01,0]
     car_2.rear_wheels_scale=[0.42,0.42,0.42]
 
-    # Car(car_2, platform, graph, pos=[0,0,0], with_platform=False)
-    Car(car_2, platform, graph2, pos=[6,0,0])
+    CarChoosing(car_2, platform, graph, pos=[6,0,0])
 
-
-    # Car(car_2, platform, graph, pos=[6,0,0], with_platform=False)
-    #Car(car_2, platform, graph, pos=[6,0,0])
 
 #Seteo bulletproof bomb
 
@@ -346,20 +408,18 @@ if __name__ == "__main__":
     car_3.front_wheels_material=rubber
     car_3.spare_wheels_material=rubber
     car_3.chassis_material=cooper
-    car_3.chassis_position=[0,0.14,0]
-    car_3.front_wheels_position=[-0.78,-0.188,0.008]
-    car_3.front_wheels_scale=[0.36,0.36,0.36]
-    car_3.rear_wheels_position=[0.47,-0.188,-0.016]
-    car_3.rear_wheels_scale=[0.38,0.38,0.38]
-    car_3.spare_wheels_position=[0.159,-0.037,0.115]
+    car_3.spare_wheels_position=[0.159,0.1,0.115]
     car_3.spare_wheels_scale=[0.615,0.615,0.615]
+    car_3.chassis_position=[0,0.14,0]
+    car_3.front_wheels_position=[-0.78,-0.05,0.01]
+    car_3.front_wheels_scale=[0.355,0.355,0.355]
+    car_3.rear_wheels_position=[0.47,-0.049,-0.0145]
+    car_3.rear_wheels_scale=[0.372,0.372,0.372]
     
     
-    # Car(car_3, platform, graph ,pos=[0,0,0], with_platform=False)
-    Car(car_3, platform, graph2 ,pos=[-6,0,0])
 
-    # Car(car_3, platform, graph ,pos=[-6,0,0], with_platform=False)
-    #Car(car_3, platform, graph ,pos=[-6,0,0])
+    CarChoosing(car_3, platform, graph ,pos=[-6,0,0])
+
 
 #--------------------------------------------------------------------------------------
 # Hangar
@@ -377,33 +437,12 @@ if __name__ == "__main__":
                        #quadratic = 1.8
                        )
                     )
-    
-    graph2.add_node("light",
-                   pipeline=color_mesh_lit_pipeline,
-                   position=[1, 1, 1],
-                   light=PointLight(
-                       diffuse = [1, 1, 1], # rojo
-                       specular = [0.8, 0.8, 0.8], # azul
-                       ambient = [0, 0.15, 0], # verde
-                       #constant = 1.0,
-                       #linear = 0.7,
-                       #quadratic = 1.8
-                       )
-                    )
-
-
-    graph.add_node("sun",
-                    pipeline=color_mesh_lit_pipeline,
-                    position=[0, 2, 0],
-                    rotation=[-np.pi/4, 0, 0],
-                    light=DirectionalLight(diffuse = [1, 1, 1], specular = [0.25, 0.25, 0.25], ambient = [0.15, 0.15, 0.15]))
         
-        
-    graph2.add_node("hangar",position=[0,0,0])
+    graph.add_node("hangar",position=[0,0,0])
     hangar_floor_material = gold
     hangar_wall_material = gold
 
-    graph2.add_node("floor",
+    graph.add_node("floor",
                    attach_to="hangar",
                    mesh = cube,
                    pipeline = color_mesh_lit_pipeline,
@@ -412,7 +451,7 @@ if __name__ == "__main__":
                    position = [0,-0.5,0],
                    material = hangar_floor_material)
     
-    graph2.add_node("wall",
+    graph.add_node("wall",
                    attach_to="hangar",
                    mesh = cube,
                    pipeline = color_mesh_lit_pipeline,
@@ -421,7 +460,7 @@ if __name__ == "__main__":
                    position = [0,1.5,-2],
                    material = hangar_wall_material)
     
-    graph2.add_node("right_wall",
+    graph.add_node("right_wall",
                    attach_to="hangar",
                    mesh = cube,
                    pipeline = color_mesh_lit_pipeline,
@@ -430,7 +469,7 @@ if __name__ == "__main__":
                    position = [8,1.5,0],
                    material = hangar_wall_material)
     
-    graph2.add_node("left_wall",
+    graph.add_node("left_wall",
                    attach_to="hangar",
                    mesh = cube,
                    pipeline = color_mesh_lit_pipeline,
@@ -446,12 +485,11 @@ if __name__ == "__main__":
                     rotation = [-np.pi/2, 0, 0],
                     scale = [40, 40, 40],
                     material = Material(
-                          diffuse = [1, 1, 1],
-                          specular = [0.5, 0.5, 0.5],
-                          ambient = [0.1, 0.1, 0.1],
-                          shininess = 256
-                     ))
-
+                            diffuse = [1, 1, 1],
+                            specular = [0.5, 0.5, 0.5],
+                            ambient = [0.1, 0.1, 0.1],
+                            shininess = 256
+                        ))
 #--------------------------------------------------------------------
 # Simulación Física
 #--------------------------------------------------------------------
@@ -504,15 +542,17 @@ if __name__ == "__main__":
         )
 
 
-    car_control_body = car_0_body
-    front_wheels_control_body = front_wheels_0_body
-    rear_wheels_control_body = rear_wheels_0_body
+    car_control_body = None #car_0_body
+    front_wheels_control_body = None #front_wheels_0_body
+    rear_wheels_control_body = None #rear_wheels_0_body
+    posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
     k=0
-    def update(dt):
+    choosing_car=True
+
+    def updateCarOnTrack(dt):
         global car_control_body
         global front_wheels_control_body
         global rear_wheels_control_body
-        global car_control_body
         global k
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
@@ -542,20 +582,20 @@ if __name__ == "__main__":
         car_control_forward = np.array([np.sin(-car_control_body.angle), 0, np.cos(-car_control_body.angle)])
         if controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.W):
             car_control_body.ApplyTorque(-torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
         elif controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.S):
             car_control_body.ApplyTorque(torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
         elif controller.is_key_pressed(pyglet.window.key.A):
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
         if controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.W):
             car_control_body.ApplyTorque(torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
         elif controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.S):
             car_control_body.ApplyTorque(-torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
         elif controller.is_key_pressed(pyglet.window.key.D):
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
         if not controller.is_key_pressed(pyglet.window.key.D) and not controller.is_key_pressed(pyglet.window.key.A):
             graph["front_wheels_"+str(k)]["rotation"][1] = 0
         if controller.is_key_pressed(pyglet.window.key.W): 
@@ -595,47 +635,126 @@ if __name__ == "__main__":
         camera.update()
         update_world(dt)
 
-    posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
-    j=0
-    print("\tW: Cambio auto\n\t Q/E: Baja/Sube Cámara \n\t1/2: Vista perspectiva/ortográfica \n\tUP/DOWN/LEFT/RIGHT: Cámara Libre" )
+    print("\tEn selección de autos\n\tW: Cambio auto\n\tQ/E: Baja/Sube Cámara \n\t1/2: Vista perspectiva/ortográfica \n\tUP/DOWN/LEFT/RIGHT: Cámara Libre \n\tEnter: Seleccionar auto" )
     
-    graph_active="graph2"
-    def update2(dt):
-        global j
+
+    def update(dt):
+        global k
         global posiciones
-        global graph_active
+        global choosing_car
+        global car_control_body
+        global front_wheels_control_body
+        global rear_wheels_control_body
+
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
+        if choosing_car:
+            graph["car_"+str(k)]["rotation"][1] -= 2*dt
+            graph["platform_"+str(k)]["rotation"][1] -= 2*dt
+            
+            if controller.is_key_pressed(pyglet.window.key.LEFT):
+                camera.position -= camera.right * dt
+            if controller.is_key_pressed(pyglet.window.key.RIGHT):
+                camera.position += camera.right * dt
+            if controller.is_key_pressed(pyglet.window.key.UP):
+                camera.position += camera.forward * dt
+            if controller.is_key_pressed(pyglet.window.key.DOWN):
+                camera.position -= camera.forward * dt
+            if controller.is_key_pressed(pyglet.window.key.Q):
+                camera.position[1] -= dt
+            if controller.is_key_pressed(pyglet.window.key.E):
+                camera.position[1] += dt
+            if controller.is_key_pressed(pyglet.window.key._1):
+                camera.type = "perspective"
+            if controller.is_key_pressed(pyglet.window.key._2):
+                camera.type = "orthographic"
+            if controller.is_key_pressed(pyglet.window.key.W):
+                k+=1
+                k=k%4
+                camera.position = posiciones[k]
+            if controller.is_key_pressed(pyglet.window.key.ENTER):
+                choosing_car=False
+                switch_scene(k)
+        else:
+            
+            carUpdate(car_0_body, front_wheels_0_body, rear_wheels_0_body, graph, 0)
+            carUpdate(car_1_body, front_wheels_1_body, rear_wheels_1_body, graph, 1)
+            carUpdate(car_2_body, front_wheels_2_body, rear_wheels_2_body, graph, 2)
+            carUpdate(car_3_body, front_wheels_3_body, rear_wheels_3_body, graph, 3)
+            if controller.is_key_pressed(pyglet.window.key._0):
+                k=0
+                car_control_body = car_0_body
+            if controller.is_key_pressed(pyglet.window.key._1):
+                k=1
+                car_control_body = car_1_body
+            if controller.is_key_pressed(pyglet.window.key._2):
+                k=2
+                car_control_body = car_2_body
+            if controller.is_key_pressed(pyglet.window.key._3):
+                k=3
+                car_control_body = car_3_body
+            
 
-        # graph2["chassis_"+str(j)]["rotation"][1] += 2*dt
-        # # graph2["front_wheels_"+str(j)]["rotation"][1] += 2*dt
-        # # graph2["rear_wheels_"+str(j)]["rotation"][1] += 2*dt
-        # graph2["platform_"+str(j)]["rotation"][1] += 2*dt
+            # Modificar la fuerza y el torque del car con las teclas
 
+            torque=0.1
+            car_control_forward = np.array([np.sin(-car_control_body.angle), 0, np.cos(-car_control_body.angle)])
+            if controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.W):
+                car_control_body.ApplyTorque(-torque, True)
+                graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            elif controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.S):
+                car_control_body.ApplyTorque(torque, True)
+                graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            elif controller.is_key_pressed(pyglet.window.key.A):
+                graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
+            if controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.W):
+                car_control_body.ApplyTorque(torque, True)
+                graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            elif controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.S):
+                car_control_body.ApplyTorque(-torque, True)
+                graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            elif controller.is_key_pressed(pyglet.window.key.D):
+                graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/8
+            if not controller.is_key_pressed(pyglet.window.key.D) and not controller.is_key_pressed(pyglet.window.key.A):
+                graph["front_wheels_"+str(k)]["rotation"][1] = 0
+            if controller.is_key_pressed(pyglet.window.key.W): 
+                if controller.is_key_pressed(pyglet.window.key.LSHIFT):
+                    car_control_body.ApplyForce((2*car_control_forward[0], 2*car_control_forward[2]), car_control_body.worldCenter, True)
+                else:
+                    car_control_body.ApplyForce((car_control_forward[0], car_control_forward[2]), car_control_body.worldCenter, True)
+            if controller.is_key_pressed(pyglet.window.key.S):
+                car_control_body.ApplyForce((-car_control_forward[0], -car_control_forward[2]), car_control_body.worldCenter, True)
+            if controller.is_key_pressed(pyglet.window.key.SPACE):
+                v=car_control_body.linearVelocity
+                car_control_body.ApplyForce((-v[0]/10,-v[1]/10), car_control_body.worldCenter, True)
         
-        if controller.is_key_pressed(pyglet.window.key.LEFT):
-            camera.position -= camera.right * dt
-        if controller.is_key_pressed(pyglet.window.key.RIGHT):
-            camera.position += camera.right * dt
-        if controller.is_key_pressed(pyglet.window.key.UP):
-            camera.position += camera.forward * dt
-        if controller.is_key_pressed(pyglet.window.key.DOWN):
-            camera.position -= camera.forward * dt
-        if controller.is_key_pressed(pyglet.window.key.Q):
-            camera.position[1] -= dt
-        if controller.is_key_pressed(pyglet.window.key.E):
-            camera.position[1] += dt
-        if controller.is_key_pressed(pyglet.window.key._1):
-            camera.type = "perspective"
-        if controller.is_key_pressed(pyglet.window.key._2):
-            camera.type = "orthographic"
-        if controller.is_key_pressed(pyglet.window.key.W):
-            j+=1
-            j=j%4
-            camera.position = posiciones[j]
+            camera.position[0] = car_control_body.position[0] + 2 * np.sin(car_control_body.angle)
+            camera.position[1] = 2
+            camera.position[2] = car_control_body.position[1] - 2 * np.cos(car_control_body.angle)
+            camera.yaw = car_control_body.angle + np.pi / 2
+
+            if controller.is_key_pressed(pyglet.window.key.R):
+                camera.position[0] = car_control_body.position[0] - 2 * np.sin(car_control_body.angle)
+                camera.position[1] = 2
+                camera.position[2] = car_control_body.position[1] + 2 * np.cos(car_control_body.angle)
+                camera.yaw = car_control_body.angle - np.pi / 2
+
+            if controller.is_key_pressed(pyglet.window.key.E):
+                camera.position[0] = car_control_body.position[0] + 2*np.sin(car_control_body.angle+np.pi/2)
+                camera.position[1] = 2
+                camera.position[2] = car_control_body.position[1] - 2*np.cos(car_control_body.angle+np.pi/2)
+                camera.yaw = car_control_body.angle-np.pi
+
+            if controller.is_key_pressed(pyglet.window.key.Q):
+                camera.position[0] = car_control_body.position[0] + 2*np.sin(car_control_body.angle-np.pi/2)
+                camera.position[1] = 2
+                camera.position[2] = car_control_body.position[1] - 2*np.cos(car_control_body.angle-np.pi/2)
+                camera.yaw = car_control_body.angle
+
+
+            update_world(dt)
+
         camera.update()
-
-
 
     @controller.event
     def on_resize(width, height):
@@ -654,10 +773,8 @@ if __name__ == "__main__":
     @controller.event
     def on_draw():
         controller.clear()
-        graph2.draw()
+        graph.draw()
         
-
-    pyglet.clock.schedule_interval(update2, 1/60)
-
+    pyglet.clock.schedule_interval(update, 1/60)
     pyglet.app.run()
 
