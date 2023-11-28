@@ -12,7 +12,7 @@ sys.path.append('../../')
 import auxiliares.utils.shapes as shapes
 from auxiliares.utils.camera import FreeCamera
 from auxiliares.utils.scene_graph import SceneGraph
-from auxiliares.utils.drawables import Model, DirectionalLight, PointLight, SpotLight, Material
+from auxiliares.utils.drawables import Model, DirectionalLight, PointLight, SpotLight, Material, Texture
 from auxiliares.utils.helpers import init_axis, init_pipeline, mesh_from_file, get_path
 
 WIDTH = 720
@@ -26,8 +26,6 @@ class Controller(pyglet.window.Window):
         super().__init__(*args, **kargs)
         self.set_minimum_size(240, 240) # Evita error cuando se redimensiona a 0
         self.set_caption(title)
-        # self.key_handler = pyglet.window.key.KeyStateHandler()
-        # self.push_handlers(self.key_handler)
         self.keys_state = {}
         self.program_state = { 
             "total_time": 0.0, 
@@ -112,7 +110,6 @@ class Car():
             graph.add_node("spare_wheels_"+str(i), mesh=car.spare_wheels_mesh,
                        pipeline=color_mesh_lit_pipeline, scale=car.spare_wheels_scale, material=car.spare_wheels_material, 
                        position = car.spare_wheels_position, rotation=rotation)
-        
 
     def draw(self):
         self.graph.draw()
@@ -152,7 +149,7 @@ class CarChoosing():
                           outerCutOff = 0.82
                    )
                 )
-
+#crea los objetos físicos de los autos
 def worldCarBody(positionIn, boxIn, densityIn, radiusIn, i=0):
     car_body = world.CreateDynamicBody(position=positionIn, angle=0, linearDamping=0.75, angularDamping=0.75)
     car_body.CreatePolygonFixture(box=boxIn, density=densityIn, friction=1)
@@ -162,6 +159,7 @@ def worldCarBody(positionIn, boxIn, densityIn, radiusIn, i=0):
     rear_wheels_body.CreateCircleFixture(radius=radiusIn, density=1, friction=0.3)
     return [car_body, front_wheels_body, rear_wheels_body]
 
+#actualiza la posición de los autos después de la simulación física
 def carUpdate(car_body, front_wheels_body, rear_wheels_body, graph, i):
     global controller
     car_body = controller.program_state["bodies"]["car_"+str(i)]
@@ -177,6 +175,7 @@ def carUpdate(car_body, front_wheels_body, rear_wheels_body, graph, i):
     if i==3:
         graph["spare_wheels_"+str(i)]["transform"] = tr.translate(car_body.position[0], 0, car_body.position[1]) @ tr.rotationY(-car_body.angle+np.pi/2)
 
+#Función que crea la nueva escena
 def switch_scene(j):
     global car_control_body
     global front_wheels_control_body
@@ -228,9 +227,50 @@ def switch_scene(j):
         car_control_body = car_3_body
         front_wheels_control_body = front_wheels_3_body
         rear_wheels_control_body = rear_wheels_3_body
+
+    graph.add_node("cube_0",
+                    mesh = quad,
+                    pipeline = color_mesh_lit_pipeline,
+                    position = [50, 0, 10],
+                    rotation = [-np.pi/2, 0, 0],
+                    scale = [5, 5, 5],
+
+                    material = material
+                        )
+    
+    graph.add_node("cube_1",
+                    mesh = quad,
+                    pipeline = color_mesh_lit_pipeline,
+                    position = [30, 0, 10],
+                    rotation = [-np.pi/2, 0, 0],
+                    scale = [5, 5, 5],
+
+                    material = emerald
+                        )
+    
+    graph.add_node("cube_2",
+                    mesh = quad,
+                    pipeline = color_mesh_lit_pipeline,
+                    position = [50, 0, -10],
+                    rotation = [-np.pi/2, 0, 0],
+                    scale = [5, 5, 5],
+
+                    material = ruby
+                        )
+    
+    graph.add_node("cube_3",
+                    mesh = quad,
+                    pipeline = color_mesh_lit_pipeline,
+                    position = [30, 0, -10],
+                    rotation = [-np.pi/2, 0, 0],
+                    scale = [5, 5, 5],
+
+                    material = cooper
+                        )
+    
     graph.add_node("sun",
                 pipeline=color_mesh_lit_pipeline,
-                position=[0, 2, 0],
+                position=[40, 2, 0],
                 rotation=[-np.pi/4, 0, 0],
                 light=DirectionalLight(diffuse = [1, 1, 1], specular = [0.25, 0.25, 0.25], ambient = [0.15, 0.15, 0.15]))
     print("\tEn pista \n\tW/A/S/D: Manejo del auto \n\tQ/E/R: Vistas Laterales y hacia atrás \n\tFreno: Espacio \n\t0/1/2/3:Conducción de otro auto \n\tShift: Turbo" )    
@@ -253,6 +293,10 @@ if __name__ == "__main__":
     color_mesh_lit_pipeline = init_pipeline(
         get_path("auxiliares/shaders/color_mesh_lit.vert"),
         get_path("auxiliares/shaders/color_mesh_lit.frag"))
+    
+    textured_mesh_lit_pipeline = init_pipeline(
+        get_path("auxiliares/shaders/textured_mesh_lit.vert"),
+        get_path("auxiliares/shaders/textured_mesh_lit.frag"))
 
     cube = Model(shapes.Cube["position"], shapes.Cube["uv"], shapes.Cube["normal"], index_data=shapes.Cube["indices"])
     quad = Model(shapes.Square["position"], shapes.Square["uv"], shapes.Square["normal"], index_data=shapes.Square["indices"])
@@ -481,15 +525,15 @@ if __name__ == "__main__":
     graph.add_node("floor_2",
                     mesh = quad,
                     pipeline = color_mesh_lit_pipeline,
-                    position = [0, -1, 0],
+                    position = [40, -1, 0],
                     rotation = [-np.pi/2, 0, 0],
                     scale = [40, 40, 40],
-                    material = Material(
-                            diffuse = [1, 1, 1],
-                            specular = [0.5, 0.5, 0.5],
-                            ambient = [0.1, 0.1, 0.1],
-                            shininess = 256
-                        ))
+                    material = pearl#Material(
+                            # diffuse = [1, 1, 1],
+                            # specular = [0.5, 0.5, 0.5],
+                            # ambient = [0.1, 0.1, 0.1],
+                            # shininess = 256
+                        )
 #--------------------------------------------------------------------
 # Simulación Física
 #--------------------------------------------------------------------
@@ -497,24 +541,41 @@ if __name__ == "__main__":
     world = b2World(gravity=(0, 0))
 
     # Objetos estáticos
-    wall1_body = world.CreateStaticBody(position=(-20, 0))
+    wall1_body = world.CreateStaticBody(position=(20, 0))
     wall1_body.CreatePolygonFixture(box=(0.5, 20), density=1, friction=1)
 
-    wall2_body = world.CreateStaticBody(position=(20, 0))
+    wall2_body = world.CreateStaticBody(position=(60, 0))
     wall2_body.CreatePolygonFixture(box=(0.5, 20), density=1, friction=1)
 
-    wall3_body = world.CreateStaticBody(position=(0, -20))
+    wall3_body = world.CreateStaticBody(position=(40, -20))
     wall3_body.CreatePolygonFixture(box=(20, 0.5), density=1, friction=1)
 
-    wall4_body = world.CreateStaticBody(position=(0, 20))
+    wall4_body = world.CreateStaticBody(position=(40, 20))
     wall4_body.CreatePolygonFixture(box=(20, 0.5), density=1, friction=1)
+
+    cube0_body = world.CreateStaticBody(position=(50, 10))
+    cube0_Fixture=cube0_body.CreatePolygonFixture(box=(2.5, 2.5), density=1, friction=1)
+    cube0_Fixture.sensor = True
+
+    cube1_body = world.CreateStaticBody(position=(30, 10))
+    cube1_Fixture=cube1_body.CreatePolygonFixture(box=(2.5, 2.5), density=1, friction=1)
+    cube1_Fixture.sensor = True
+
+    cube2_body = world.CreateStaticBody(position=(50, -10))
+    cube2_Fixture=cube2_body.CreatePolygonFixture(box=(2.5, 2.5), density=1, friction=1)
+    cube2_Fixture.sensor = True
+
+    cube3_body = world.CreateStaticBody(position=(30, -10))
+    cube3_Fixture=cube3_body.CreatePolygonFixture(box=(2.5, 2.5), density=1, friction=1)
+    cube3_Fixture.sensor = True
+
 
     # Objetos dinámicos
     controller.program_state["world"] = world
-    car_0_body, front_wheels_0_body, rear_wheels_0_body = worldCarBody((2,0), (0.3,0.7), 1, 0.01)
-    car_1_body, front_wheels_1_body, rear_wheels_1_body = worldCarBody((-2,0), (0.4,0.5), 4, 0.01)
-    car_2_body, front_wheels_2_body, rear_wheels_2_body = worldCarBody((0,-2), (0.3,0.8), 1, 0.01)
-    car_3_body, front_wheels_3_body, rear_wheels_3_body = worldCarBody((0,2), (0.35,0.5), 1, 0.01)
+    car_0_body, front_wheels_0_body, rear_wheels_0_body = worldCarBody((42,0), (0.3,0.7), 1, 0.01)
+    car_1_body, front_wheels_1_body, rear_wheels_1_body = worldCarBody((38,0), (0.4,0.5), 4, 0.01)
+    car_2_body, front_wheels_2_body, rear_wheels_2_body = worldCarBody((40,-2), (0.3,0.8), 1, 0.01)
+    car_3_body, front_wheels_3_body, rear_wheels_3_body = worldCarBody((40,2), (0.35,0.5), 1, 0.01)
 
     # Se guardan los cuerpos en el controller para poder acceder a ellos desde el loop de simulación
     
@@ -532,6 +593,11 @@ if __name__ == "__main__":
     controller.program_state["bodies"]["front_wheels_3"] = front_wheels_3_body
     controller.program_state["bodies"]["rear_wheels_3"] = rear_wheels_3_body
 
+    controller.program_state["bodies"]["cube_0"] = cube0_body
+    controller.program_state["bodies"]["cube_1"] = cube1_body
+    controller.program_state["bodies"]["cube_2"] = cube2_body
+    controller.program_state["bodies"]["cube_3"] = cube3_body
+
 
     #######################################
 
@@ -542,98 +608,13 @@ if __name__ == "__main__":
         )
 
 
-    car_control_body = None #car_0_body
-    front_wheels_control_body = None #front_wheels_0_body
-    rear_wheels_control_body = None #rear_wheels_0_body
+    car_control_body = None
+    front_wheels_control_body = None
+    rear_wheels_control_body = None
     posiciones = [[2,1.5,2], [-2,1.5,2] , [6,1.5,2], [-6,1.5,2]]
     k=0
     choosing_car=True
 
-    def updateCarOnTrack(dt):
-        global car_control_body
-        global front_wheels_control_body
-        global rear_wheels_control_body
-        global k
-        controller.program_state["total_time"] += dt
-        camera = controller.program_state["camera"]
-
-        # Actualización física del car 0
-        carUpdate(car_0_body, front_wheels_0_body, rear_wheels_0_body, graph, 0)
-        carUpdate(car_1_body, front_wheels_1_body, rear_wheels_1_body, graph, 1)
-        carUpdate(car_2_body, front_wheels_2_body, rear_wheels_2_body, graph, 2)
-        carUpdate(car_3_body, front_wheels_3_body, rear_wheels_3_body, graph, 3)
-        if controller.is_key_pressed(pyglet.window.key._0):
-            k=0
-            car_control_body = car_0_body
-        if controller.is_key_pressed(pyglet.window.key._1):
-            k=1
-            car_control_body = car_1_body
-        if controller.is_key_pressed(pyglet.window.key._2):
-            k=2
-            car_control_body = car_2_body
-        if controller.is_key_pressed(pyglet.window.key._3):
-            k=3
-            car_control_body = car_3_body
-        
-
-        # Modificar la fuerza y el torque del car con las teclas
-
-        torque=0.1
-        car_control_forward = np.array([np.sin(-car_control_body.angle), 0, np.cos(-car_control_body.angle)])
-        if controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.W):
-            car_control_body.ApplyTorque(-torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
-        elif controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.S):
-            car_control_body.ApplyTorque(torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
-        elif controller.is_key_pressed(pyglet.window.key.A):
-            graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/10
-        if controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.W):
-            car_control_body.ApplyTorque(torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
-        elif controller.is_key_pressed(pyglet.window.key.D) and controller.is_key_pressed(pyglet.window.key.S):
-            car_control_body.ApplyTorque(-torque, True)
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
-        elif controller.is_key_pressed(pyglet.window.key.D):
-            graph["front_wheels_"+str(k)]["rotation"][1] = -np.pi/10
-        if not controller.is_key_pressed(pyglet.window.key.D) and not controller.is_key_pressed(pyglet.window.key.A):
-            graph["front_wheels_"+str(k)]["rotation"][1] = 0
-        if controller.is_key_pressed(pyglet.window.key.W): 
-            if controller.is_key_pressed(pyglet.window.key.LSHIFT):
-                car_control_body.ApplyForce((2*car_control_forward[0], 2*car_control_forward[2]), car_control_body.worldCenter, True)
-            else:
-                car_control_body.ApplyForce((car_control_forward[0], car_control_forward[2]), car_control_body.worldCenter, True)
-        if controller.is_key_pressed(pyglet.window.key.S):
-            car_control_body.ApplyForce((-car_control_forward[0], -car_control_forward[2]), car_control_body.worldCenter, True)
-        if controller.is_key_pressed(pyglet.window.key.SPACE):
-            v=car_control_body.linearVelocity
-            car_control_body.ApplyForce((-v[0]/10,-v[1]/10), car_control_body.worldCenter, True)
-      
-        camera.position[0] = car_control_body.position[0] + 2 * np.sin(car_control_body.angle)
-        camera.position[1] = 2
-        camera.position[2] = car_control_body.position[1] - 2 * np.cos(car_control_body.angle)
-        camera.yaw = car_control_body.angle + np.pi / 2
-
-        if controller.is_key_pressed(pyglet.window.key.R):
-            camera.position[0] = car_control_body.position[0] - 2 * np.sin(car_control_body.angle)
-            camera.position[1] = 2
-            camera.position[2] = car_control_body.position[1] + 2 * np.cos(car_control_body.angle)
-            camera.yaw = car_control_body.angle - np.pi / 2
-
-        if controller.is_key_pressed(pyglet.window.key.E):
-            camera.position[0] = car_control_body.position[0] + 2*np.sin(car_control_body.angle+np.pi/2)
-            camera.position[1] = 2
-            camera.position[2] = car_control_body.position[1] - 2*np.cos(car_control_body.angle+np.pi/2)
-            camera.yaw = car_control_body.angle-np.pi
-
-        if controller.is_key_pressed(pyglet.window.key.Q):
-            camera.position[0] = car_control_body.position[0] + 2*np.sin(car_control_body.angle-np.pi/2)
-            camera.position[1] = 2
-            camera.position[2] = car_control_body.position[1] - 2*np.cos(car_control_body.angle-np.pi/2)
-            camera.yaw = car_control_body.angle
-
-        camera.update()
-        update_world(dt)
 
     print("\tEn selección de autos\n\tW: Cambio auto\n\tQ/E: Baja/Sube Cámara \n\t1/2: Vista perspectiva/ortográfica \n\tUP/DOWN/LEFT/RIGHT: Cámara Libre \n\tEnter: Seleccionar auto" )
     
@@ -648,7 +629,7 @@ if __name__ == "__main__":
 
         controller.program_state["total_time"] += dt
         camera = controller.program_state["camera"]
-        if choosing_car:
+        if choosing_car: #escena de selección
             graph["car_"+str(k)]["rotation"][1] -= 2*dt
             graph["platform_"+str(k)]["rotation"][1] -= 2*dt
             
@@ -675,7 +656,7 @@ if __name__ == "__main__":
             if controller.is_key_pressed(pyglet.window.key.ENTER):
                 choosing_car=False
                 switch_scene(k)
-        else:
+        else: #escena en pista
             
             carUpdate(car_0_body, front_wheels_0_body, rear_wheels_0_body, graph, 0)
             carUpdate(car_1_body, front_wheels_1_body, rear_wheels_1_body, graph, 1)
@@ -699,6 +680,23 @@ if __name__ == "__main__":
 
             torque=0.1
             car_control_forward = np.array([np.sin(-car_control_body.angle), 0, np.cos(-car_control_body.angle)])
+            #boost zone
+            if k==0:
+                cube0_body = controller.program_state["bodies"]["cube_0"]
+                if cube0_body.fixtures[0].TestPoint(car_control_body.position) and controller.is_key_pressed(pyglet.window.key.W):
+                    car_control_body.ApplyForce((5*car_control_forward[0], 5*car_control_forward[2]), car_control_body.worldCenter, True)
+            elif k==1:
+                cube1_body = controller.program_state["bodies"]["cube_1"]
+                if cube1_body.fixtures[0].TestPoint(car_control_body.position) and controller.is_key_pressed(pyglet.window.key.W):
+                    car_control_body.ApplyForce((5*car_control_forward[0], 5*car_control_forward[2]), car_control_body.worldCenter, True)
+            elif k==2:
+                cube2_body = controller.program_state["bodies"]["cube_2"]
+                if cube2_body.fixtures[0].TestPoint(car_control_body.position) and controller.is_key_pressed(pyglet.window.key.W):
+                    car_control_body.ApplyForce((5*car_control_forward[0], 5*car_control_forward[2]), car_control_body.worldCenter, True)
+            elif k==3:
+                cube3_body = controller.program_state["bodies"]["cube_3"]
+                if cube3_body.fixtures[0].TestPoint(car_control_body.position) and controller.is_key_pressed(pyglet.window.key.W):
+                    car_control_body.ApplyForce((5*car_control_forward[0], 5*car_control_forward[2]), car_control_body.worldCenter, True)
             if controller.is_key_pressed(pyglet.window.key.A) and controller.is_key_pressed(pyglet.window.key.W):
                 car_control_body.ApplyTorque(-torque, True)
                 graph["front_wheels_"+str(k)]["rotation"][1] = np.pi/8
@@ -750,8 +748,6 @@ if __name__ == "__main__":
                 camera.position[1] = 2
                 camera.position[2] = car_control_body.position[1] - 2*np.cos(car_control_body.angle-np.pi/2)
                 camera.yaw = car_control_body.angle
-
-
             update_world(dt)
 
         camera.update()
@@ -765,9 +761,6 @@ if __name__ == "__main__":
         if buttons & pyglet.window.mouse.RIGHT:
             controller.program_state["camera"].yaw += dx * 0.01
             controller.program_state["camera"].pitch += dy * 0.01
-
-
-    
 
     # draw loop
     @controller.event
